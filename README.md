@@ -1,4 +1,4 @@
-![Static Badge](https://img.shields.io/badge/Version-v0.0.9-brightgreen)
+![Static Badge](https://img.shields.io/badge/Version-v0.1.0-brightgreen)
 [![unittest-uv](https://github.com/KenHino/Pompon/actions/workflows/unittest-uv.yml/badge.svg)](https://github.com/KenHino/Pompon/actions/workflows/unittest-uv.yml)
 # Pompon
 
