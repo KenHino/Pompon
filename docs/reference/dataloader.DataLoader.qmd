@@ -1,0 +1,15 @@
+# dataloader.DataLoader { #pompon.dataloader.DataLoader }
+
+`dataloader.DataLoader(self, arrays, batch_size=10000, shuffle=False)`
+
+DataLoader class for mini-batch training.
+
+## Examples
+
+```python
+>>> x = np.random.rand(100, 2)
+>>> y = np.random.rand(100, 1)
+>>> loader = DataLoader(x, y, batch_size=10)
+>>> for x_batch, y_batch in loader:
+...     print(x_batch.shape, y_batch.shape)
+```

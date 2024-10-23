@@ -1,0 +1,63 @@
+# optimizer.adam.Adam { #pompon.optimizer.adam.Adam }
+
+`optimizer.adam.Adam(self, lr=0.01, b1=0.9, b2=0.999, eps=1e-08, eps_root=0.0)`
+
+Adam optimizer class
+
+See also [Optax documentation](https://optax.readthedocs.io/en/latest/api/optimizers.html#optax.adam)
+
+$$
+   \begin{align*}
+   m_t &= \beta_1 m_{t-1} + (1 - \beta_1) g_t \\
+   v_t &= \beta_2 v_{t-1} + (1 - \beta_2) g_t^2 \\
+   \hat{m}_t &= \frac{m_t}{1 - \beta_1^t} \\
+   \hat{v}_t &= \frac{v_t}{1 - \beta_2^t} \\
+   \Delta \theta_t &= -\frac{\eta}{\sqrt{\hat{v}_t + \bar{\epsilon}} + \epsilon} \hat{m}_t \\
+   \theta_{t+1} &= \theta_t + \Delta \theta_t
+   \end{align*}
+$$
+
+## Methods
+
+| Name | Description |
+| --- | --- |
+| [get_trace](#pompon.optimizer.adam.Adam.get_trace) | Get the optimization trace |
+| [setup](#pompon.optimizer.adam.Adam.setup) |  |
+
+### get_trace { #pompon.optimizer.adam.Adam.get_trace }
+
+`optimizer.adam.Adam.get_trace()`
+
+Get the optimization trace
+
+#### Returns
+
+| Type                                           | Description                                                                                                      |
+|------------------------------------------------|------------------------------------------------------------------------------------------------------------------|
+| [pl](`polars`).[DataFrame](`polars.DataFrame`) | pl.DataFrame: the optimization trace with columns ``['epoch', 'mse_train', 'mse_test', 'tt_norm', 'tt_ranks']``. |
+
+### setup { #pompon.optimizer.adam.Adam.setup }
+
+`optimizer.adam.Adam.setup(model, x_train, y_train, *, batch_size=100, shuffle=True, x_test=None, y_test=None, f_train=None, f_test=None, jobname=None, outdir='.')`
+
+#### Parameters
+
+| Name         | Type                                                                     | Description                                                                                                                                                       | Default    |
+|--------------|--------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `model`      | [pompon](`pompon`).[model](`pompon.model`).[Model](`pompon.model.Model`) | the model to be optimized                                                                                                                                         | _required_ |
+| `x_train`    | [Array](`jax.Array`)                                                     | the training data                                                                                                                                                 | _required_ |
+| `y_train`    | [Array](`jax.Array`)                                                     | the training target                                                                                                                                               | _required_ |
+| `batch_size` | [int](`int`)                                                             | the batch size for stochastic method.                          Defaults to 100.                                                                                   | `100`      |
+| `shuffle`    | [bool](`bool`)                                                           | whether to shuffle the data.                        Defaults to True. When batch_size is large,                           it is recommended to set shuffle=False. | `True`     |
+| `x_test`     | [Array](`jax.Array`)                                                     | the test data. Defaults to None.                                                                                                                                  | `None`     |
+| `y_test`     | [Array](`jax.Array`)                                                     | the test target. Defaults to None.                                                                                                                                | `None`     |
+| `f_train`    | [Array](`jax.Array`)                                                     | the force data. Defaults to None.                                                                                                                                 | `None`     |
+| `f_test`     | [Array](`jax.Array`)                                                     | the force data for test.   Defaults to None.   Currently, test MSE is evaluated by only the energy term.                                                          | `None`     |
+| `jobname`    | [str](`str`)                                                             | the name of the job. Defaults to None.                                                                                                                            | `None`     |
+| `outdir`     | [str](`str`)                                                             | the output directory. Defaults to ".".                                                                                                                            | `'.'`      |
+
+#### Returns
+
+| Type                                                | Description                                    |
+|-----------------------------------------------------|------------------------------------------------|
+| [Optimizer](`pompon.optimizer.optimizer.Optimizer`) | the optimizer defined with the model and data. |

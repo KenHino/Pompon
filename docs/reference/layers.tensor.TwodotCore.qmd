@@ -1,0 +1,211 @@
+# layers.tensor.TwodotCore { #pompon.layers.tensor.TwodotCore }
+
+`layers.tensor.TwodotCore(self, data, leg_names, name='B')`
+
+Two-dot tensor
+
+$$
+   B\substack{i_pi_{p+1} \\ \beta_{p-1} \beta_{p+1}}
+   = \sum_{\beta_p=1}^{M}
+   W^{[p]}_{\beta_{p-1} i_p \beta_p}
+   W^{[p+1]}_{\beta_p i_{p+1} \beta_{p+1}}
+$$
+
+## Methods
+
+| Name | Description |
+| --- | --- |
+| [as_basis_batch](#pompon.layers.tensor.TwodotCore.as_basis_batch) | Convert to BasisBatch |
+| [as_core](#pompon.layers.tensor.TwodotCore.as_core) | Convert to Core |
+| [as_core_basis_batch](#pompon.layers.tensor.TwodotCore.as_core_basis_batch) | Convert to CoreBasisBatch |
+| [as_left_block_batch](#pompon.layers.tensor.TwodotCore.as_left_block_batch) | Convert to LeftBlockBatch |
+| [as_ndarray](#pompon.layers.tensor.TwodotCore.as_ndarray) | Convert to jax.Array (Array) |
+| [as_right_block_batch](#pompon.layers.tensor.TwodotCore.as_right_block_batch) | Convert to RightBlockBatch |
+| [as_tensor](#pompon.layers.tensor.TwodotCore.as_tensor) | Convert to Tensor |
+| [as_twodot_core](#pompon.layers.tensor.TwodotCore.as_twodot_core) | Convert to TwodotCore |
+| [normalize](#pompon.layers.tensor.TwodotCore.normalize) | Normalize tensor |
+| [scale_to](#pompon.layers.tensor.TwodotCore.scale_to) | Scale maximum abs element of the tensor to the given scale |
+| [svd](#pompon.layers.tensor.TwodotCore.svd) | Singular value decomposition between (0,1) and (2,3) legs |
+| [truncate_rank](#pompon.layers.tensor.TwodotCore.truncate_rank) | Get new bond dimension |
+
+### as_basis_batch { #pompon.layers.tensor.TwodotCore.as_basis_batch }
+
+`layers.tensor.TwodotCore.as_basis_batch(name='Phi')`
+
+Convert to BasisBatch
+
+#### Returns
+
+| Type                                            | Description       |
+|-------------------------------------------------|-------------------|
+| [BasisBatch](`pompon.layers.tensor.BasisBatch`) | BasisBatch tensor |
+
+### as_core { #pompon.layers.tensor.TwodotCore.as_core }
+
+`layers.tensor.TwodotCore.as_core(name='W')`
+
+Convert to Core
+
+#### Returns
+
+| Type                                | Description   |
+|-------------------------------------|---------------|
+| [Core](`pompon.layers.tensor.Core`) | Core tensor   |
+
+### as_core_basis_batch { #pompon.layers.tensor.TwodotCore.as_core_basis_batch }
+
+`layers.tensor.TwodotCore.as_core_basis_batch(name='WPhi')`
+
+Convert to CoreBasisBatch
+
+#### Returns
+
+| Type                                                    | Description           |
+|---------------------------------------------------------|-----------------------|
+| [CoreBasisBatch](`pompon.layers.tensor.CoreBasisBatch`) | CoreBasisBatch tensor |
+
+### as_left_block_batch { #pompon.layers.tensor.TwodotCore.as_left_block_batch }
+
+`layers.tensor.TwodotCore.as_left_block_batch(name='L')`
+
+Convert to LeftBlockBatch
+
+#### Returns
+
+| Type                                                    | Description           |
+|---------------------------------------------------------|-----------------------|
+| [LeftBlockBatch](`pompon.layers.tensor.LeftBlockBatch`) | LeftBlockBatch tensor |
+
+### as_ndarray { #pompon.layers.tensor.TwodotCore.as_ndarray }
+
+`layers.tensor.TwodotCore.as_ndarray()`
+
+Convert to jax.Array (Array)
+
+#### Returns
+
+| Type                 | Description   |
+|----------------------|---------------|
+| [Array](`jax.Array`) | Array tensor  |
+
+### as_right_block_batch { #pompon.layers.tensor.TwodotCore.as_right_block_batch }
+
+`layers.tensor.TwodotCore.as_right_block_batch(name='R')`
+
+Convert to RightBlockBatch
+
+#### Returns
+
+| Type                                                      | Description            |
+|-----------------------------------------------------------|------------------------|
+| [RightBlockBatch](`pompon.layers.tensor.RightBlockBatch`) | RightBlockBatch tensor |
+
+### as_tensor { #pompon.layers.tensor.TwodotCore.as_tensor }
+
+`layers.tensor.TwodotCore.as_tensor(name='T')`
+
+Convert to Tensor
+
+#### Returns
+
+| Type                                    | Description   |
+|-----------------------------------------|---------------|
+| [Tensor](`pompon.layers.tensor.Tensor`) | Tensor tensor |
+
+### as_twodot_core { #pompon.layers.tensor.TwodotCore.as_twodot_core }
+
+`layers.tensor.TwodotCore.as_twodot_core(name='B')`
+
+Convert to TwodotCore
+
+#### Returns
+
+| Type                                            | Description       |
+|-------------------------------------------------|-------------------|
+| [TwodotCore](`pompon.layers.tensor.TwodotCore`) | TwodotCore tensor |
+
+### normalize { #pompon.layers.tensor.TwodotCore.normalize }
+
+`layers.tensor.TwodotCore.normalize()`
+
+Normalize tensor
+
+Tensor is normalized and return the norm of the tensor.
+
+#### Returns
+
+| Type                 | Description                             |
+|----------------------|-----------------------------------------|
+| [Array](`jax.Array`) | norm of the tensor before normalization |
+
+### scale_to { #pompon.layers.tensor.TwodotCore.scale_to }
+
+`layers.tensor.TwodotCore.scale_to(scale=None, ord='fro')`
+
+Scale maximum abs element of the tensor to the given scale
+
+#### Parameters
+
+| Name    | Type                                     | Description                                                                                                                         | Default   |
+|---------|------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| `scale` | [float](`float`) \| [Array](`jax.Array`) | scale factor. Defaults to jnp.array(1.0).                                                                                           | `None`    |
+| `ord`   | [str](`str`)                             | norm type to scale either "fro" or "max". Defaults to "fro" (Frobenius norm). "fro" : Frobenius norm "max" : maximum absolute value | `'fro'`   |
+
+#### Returns
+
+| Type                 | Description                               |
+|----------------------|-------------------------------------------|
+| [Array](`jax.Array`) | multiplication factor to scale the tensor |
+
+### svd { #pompon.layers.tensor.TwodotCore.svd }
+
+`layers.tensor.TwodotCore.svd(rank=None, new_leg_name=None, truncation=1.0, gauge='CR')`
+
+Singular value decomposition between (0,1) and (2,3) legs
+
+#### Parameters
+
+| Name           | Type             | Description                                 | Default   |
+|----------------|------------------|---------------------------------------------|-----------|
+| `rank`         | [int](`int`)     | bond dimension (rank). Defaults to None.    | `None`    |
+| `new_leg_name` | [str](`str`)     | new leg name. Defaults to None.             | `None`    |
+| `truncation`   | [float](`float`) | singular value truncation. Defaults to 1.0. | `1.0`     |
+| `gauge`        | [str](`str`)     | gauge. Defaults to "CR".                    | `'CR'`    |
+
+#### Returns
+
+| Type                                                                                         | Description                                 |
+|----------------------------------------------------------------------------------------------|---------------------------------------------|
+| [tuple](`tuple`)\[[Core](`pompon.layers.tensor.Core`), [Core](`pompon.layers.tensor.Core`)\] | Tuple[Core, Core]: left core and right core |
+
+#### Examples
+
+```python
+>>> import jax.numpy as jnp
+>>> from pompon.tt import TensorTrain
+>>> tt = TensorTrain.decompose(original_tensor=jnp.ones((4, 4, 4, 4)))
+>>> B = tt[0] @ tt[1]
+>>> print(B)
+TwodotCore(shape=(1, 4, 4, 16), leg_names=('β0', 'i0', 'i1', 'β2'))
+>>> print(B.svd(rank=2))
+(Core(shape=(1, 4, 2), leg_names=('β0', 'i0', 'β1')), Core(shape=(2, 4, 16), leg_names=('β1', 'i1', 'β2')))
+```
+
+### truncate_rank { #pompon.layers.tensor.TwodotCore.truncate_rank }
+
+`layers.tensor.TwodotCore.truncate_rank(s, truncation)`
+
+Get new bond dimension
+
+#### Parameters
+
+| Name         | Type                 | Description                                                | Default    |
+|--------------|----------------------|------------------------------------------------------------|------------|
+| `s`          | [Array](`jax.Array`) | singular values in descending order        with shape (M,) | _required_ |
+| `truncation` | [float](`float`)     | singular value truncation                                  | _required_ |
+
+#### Returns
+
+| Type         | Description               |
+|--------------|---------------------------|
+| [int](`int`) | new bond dimension (rank) |

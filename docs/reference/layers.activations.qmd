@@ -1,0 +1,313 @@
+# layers.activations { #pompon.layers.activations }
+
+`layers.activations`
+
+Activation functions for neural networks.
+
+## Supported Activations
+
+| Argument name   | Implementation (Docstring) |
+| :--:            | :--:                       |
+| `silu+moderate` | [`combine`](`pompon.layers.activations.combine`) [`silu`](#pompon.layers.activations.silu) and [`moderate`](#pompon.layers.activations.moderate)|
+| `tanh`          | [`pompon.layers.activations.tanh`](#pompon.layers.activations.tanh) |
+| `exp`           | [`pompon.layers.activations.exp`](#pompon.layers.activations.exp) |
+| `gauss`         | [`pompon.layers.activations.gaussian`](#pompon.layers.activations.gaussian) |
+| `erf`           | [`pompon.layers.activations.erf`](#pompon.layers.activations.erf) |
+| `moderate`      | [`pompon.layers.activations.moderate`](#pompon.layers.activations.moderate) |
+| `silu`          | [`pompon.layers.activations.silu`](#pompon.layers.activations.silu) |
+
+
+## How to add custom activation function?
+
+- Modify pompon (**recommended**)
+    1. Implement JAX function in `pompon.layers.activations`.
+    2. Add custom name in `pompon.layers.basis.Phi._get_activation`.
+    3. Specify the name as NNMPO argument.
+    4. Give us your pull requests! (Optional)
+- Override `activation` attribute
+    1. Define `func: Callable[[jax.Array], jax.Array]` object by JAX.
+    2. Set attribute `NNMPO.basis.phi{i}.activation = func` for i=0,1,...,f-1.
+
+::: { .callout-warning }
+The 0-th basis is always 1
+because of the implementation in
+`pompon._jittables._forward_q2phi`
+:::
+
+## Functions
+
+| Name | Description |
+| --- | --- |
+| [Bspline](#pompon.layers.activations.Bspline) | B-spline basis function |
+| [chebyshev_recursive](#pompon.layers.activations.chebyshev_recursive) | Chebyshev polynomial basis function |
+| [combine](#pompon.layers.activations.combine) | Combine activation functions |
+| [erf](#pompon.layers.activations.erf) | Error function activation function |
+| [exp](#pompon.layers.activations.exp) | Exponential activation function |
+| [extend_grid](#pompon.layers.activations.extend_grid) | Extend grid points for B-spline basis function |
+| [gaussian](#pompon.layers.activations.gaussian) | Gaussian activation function |
+| [leakyrelu](#pompon.layers.activations.leakyrelu) | Leaky rectified linear unit activation function |
+| [legendre_recursive](#pompon.layers.activations.legendre_recursive) | Legendre polynomial basis function |
+| [moderate](#pompon.layers.activations.moderate) | Moderate activation function |
+| [polynomial](#pompon.layers.activations.polynomial) | Polynomial basis function |
+| [polynomial_recursive](#pompon.layers.activations.polynomial_recursive) | Calculate polynomial basis recursively |
+| [relu](#pompon.layers.activations.relu) | Rectified linear unit activation function |
+| [silu](#pompon.layers.activations.silu) | Sigmoid linear unit activation function |
+| [softplus](#pompon.layers.activations.softplus) | Softplus activation function |
+| [tanh](#pompon.layers.activations.tanh) | Hyperbolic tangent activation function |
+
+### Bspline { #pompon.layers.activations.Bspline }
+
+`layers.activations.Bspline(x, grid, k=0)`
+
+B-spline basis function
+
+:::{ .callout-caution }
+- This activation is experimental and may not be stable.
+- One should fix `w` and `b` to 1.0 and 0.0, respectively.
+- The input `x` must be in [-1, 1].
+:::
+
+$$
+   \phi_n(x) = B_{n,k}(x)
+$$
+
+#### Parameters
+
+| Name   | Type                 | Description                                                         | Default    |
+|--------|----------------------|---------------------------------------------------------------------|------------|
+| `x`    | [Array](`jax.Array`) | input with shape (D, f) where D is the number of data points.       | _required_ |
+| `grid` | [Array](`jax.Array`) | grid points with shape (f, N) where N is the number of grid points. | _required_ |
+| `k`    | [int](`int`)         | order of B-spline basis function                                    | `0`        |
+
+### chebyshev_recursive { #pompon.layers.activations.chebyshev_recursive }
+
+`layers.activations.chebyshev_recursive(x, N, k=1)`
+
+Chebyshev polynomial basis function
+
+:::{ .callout-caution }
+- This activation is experimental and may not be stable.
+- One should fix `w` and `b` to 1.0 and 0.0, respectively.
+- The input `x` must be in [-1, 1].
+:::
+
+$$
+   \phi_n(x) = T_n(x) \quad (n=1,2,\cdots,N-1)
+$$
+
+- By using this function, the model can be regressed to a Chebyshev polynomial function.
+- This function should be used with \
+  `functools.partial <https://docs.python.org/3/library/functools.html#functools.partial>`_ as follows:
+
+### combine { #pompon.layers.activations.combine }
+
+`layers.activations.combine(x, funcs, split_indices)`
+
+Combine activation functions
+
+#### Parameters
+
+| Name    | Type                 | Description                                                   | Default    |
+|---------|----------------------|---------------------------------------------------------------|------------|
+| `x`     | [Array](`jax.Array`) | input with shape (D, f) where D is the number of data points. | _required_ |
+| `funcs` | [tuple](`tuple`)     | list of activation functions                                  | _required_ |
+
+#### Returns
+
+| Type                 | Description              |
+|----------------------|--------------------------|
+| [Array](`jax.Array`) | output with shape (D, f) |
+
+### erf { #pompon.layers.activations.erf }
+
+`layers.activations.erf(x)`
+
+Error function activation function
+
+$$
+   \phi(x) = \mathrm{erf}(x) = \frac{2}{\sqrt{\pi}} \int_0^x e^{-t^2} dt
+$$
+
+- [W. Koch et al., J. Chem. Phys. 141(2), 021101 (2014)](https://doi.org/10.1063/1.4887508)
+  adopted this function as multiplicative artificial neural networks.
+- Can be analytically integrated with Gaussian basis
+- Need large number of basis functions (empirically)
+- Almost the same as sigmoid
+
+### exp { #pompon.layers.activations.exp }
+
+`layers.activations.exp(x)`
+
+Exponential activation function
+
+$$
+   \phi(x) = e^{|-x|}
+$$
+
+### extend_grid { #pompon.layers.activations.extend_grid }
+
+`layers.activations.extend_grid(grid, k_extend=0)`
+
+Extend grid points for B-spline basis function
+
+#### Parameters
+
+| Name       | Type                 | Description                                                         | Default    |
+|------------|----------------------|---------------------------------------------------------------------|------------|
+| `grid`     | [Array](`jax.Array`) | grid points with shape (f, N) where N is the number of grid points. | _required_ |
+| `k_extend` | [int](`int`)         | order of B-spline basis function                                    | `0`        |
+
+### gaussian { #pompon.layers.activations.gaussian }
+
+`layers.activations.gaussian(x)`
+
+Gaussian activation function
+
+$$
+   \phi(x) = -e^{-x^2}
+$$
+
+### leakyrelu { #pompon.layers.activations.leakyrelu }
+
+`layers.activations.leakyrelu(x, alpha=0.01)`
+
+Leaky rectified linear unit activation function
+
+$$
+   \phi(x) = \max(\alpha x, x)
+$$
+
+### legendre_recursive { #pompon.layers.activations.legendre_recursive }
+
+`layers.activations.legendre_recursive(x, N, k=1)`
+
+Legendre polynomial basis function
+
+:::{ .callout-caution }
+- This activation is experimental and may not be stable.
+- One should fix `w` and `b` to 1.0 and 0.0, respectively.
+- The input `x` must be in [-1, 1].
+:::
+
+$$
+   \phi_n(x) = P_n(x) \quad (n=1,2,\cdots,N-1)
+$$
+
+- By using this function, the model can be regressed to a Legendre polynomial function.
+- This function should be used with \
+  `functools.partial <https://docs.python.org/3/library/functools.html#functools.partial>`_ as follows:
+
+### moderate { #pompon.layers.activations.moderate }
+
+`layers.activations.moderate(x, ε=0.05)`
+
+Moderate activation function
+
+$$
+   \phi(x) = 1 - e^{-x^2} + \epsilon x^2
+$$
+
+- [W. Koch et al. J. Chem. Phys. 151, 064121 (2019)](https://doi.org/10.1063/1.5113579)
+  adopted this function as multiplicative neural network potentials.
+- Moderate increase outside the region
+  spanned by the ab initio sample points
+
+### polynomial { #pompon.layers.activations.polynomial }
+
+`layers.activations.polynomial(x, N)`
+
+Polynomial basis function
+
+:::{ .callout-caution }
+- This activation is experimental and may not be stable.
+- One should fix `w` and `b` to 1.0 and 0.0, respectively.
+:::
+
+$$
+   \phi_n(x) = x^n \quad (n=1,2,\cdots,N-1)
+$$
+
+- When $N$ is too large, this function is numerically unstable.
+- When $N=1$, it is equivalent to linear activation function
+- By using this function, the model can be regressed to a polynomial function.
+- This function should be used with \
+  `functools.partial <https://docs.python.org/3/library/functools.html#functools.partial>`_ as follows:
+
+```python
+func = functools.partial(polynomial, N=3)
+```
+
+### polynomial_recursive { #pompon.layers.activations.polynomial_recursive }
+
+`layers.activations.polynomial_recursive(x, N, k=1)`
+
+Calculate polynomial basis recursively
+
+:::{ .callout-caution }
+- This activation is experimental and may not be stable.
+- One should fix `w` and `b` to 1.0 and 0.0, respectively.
+:::
+
+$$
+    \phi_n(x) = x^n = x^{n-1} \cdot x
+$$
+
+#### Parameters
+
+| Name   | Type                 | Description                                                   | Default    |
+|--------|----------------------|---------------------------------------------------------------|------------|
+| `x`    | [Array](`jax.Array`) | input with shape (D, f) where D is the number of data points. | _required_ |
+| `N`    | [int](`int`)         | maximum degree of polynomial basis                            | _required_ |
+| `k`    | [int](`int`)         | current degree of polynomial basis                            | `1`        |
+
+#### Returns
+
+| Type                 | Description                  |
+|----------------------|------------------------------|
+| [Array](`jax.Array`) | ϕ = output with shape (D, f) |
+
+ϕ = D @ [x^1, x^2, ..., x^N]
+
+### relu { #pompon.layers.activations.relu }
+
+`layers.activations.relu(x)`
+
+Rectified linear unit activation function
+
+$$
+   \phi(x) = \max(0, x)
+$$
+
+::: { .callout-note }
+This function is not suitable for force field regression.
+:::
+
+### silu { #pompon.layers.activations.silu }
+
+`layers.activations.silu(x)`
+
+Sigmoid linear unit activation function
+
+$$
+   \phi(x) = x \cdot \sigma(x) = x \cdot \frac{1}{1 + e^{-x}}
+$$
+
+### softplus { #pompon.layers.activations.softplus }
+
+`layers.activations.softplus(x)`
+
+Softplus activation function
+
+$$
+   \phi(x) = \log(1 + e^x)
+$$
+
+### tanh { #pompon.layers.activations.tanh }
+
+`layers.activations.tanh(x)`
+
+Hyperbolic tangent activation function
+
+$$
+   \phi(x) = \tanh(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}}
+$$

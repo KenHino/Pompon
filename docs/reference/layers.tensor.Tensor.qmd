@@ -1,0 +1,172 @@
+# layers.tensor.Tensor { #pompon.layers.tensor.Tensor }
+
+`layers.tensor.Tensor(self, data, leg_names, name='T')`
+
+Tensor class support "leg_names" for tensor network
+
+## Examples
+
+```python
+>>> import jax.numpy as jnp
+>>> from pompon.layers.core import Tensor
+>>> tensor_abc = Tensor(data=jnp.ones((2, 3, 4)), leg_names=("a", "b", "c"))
+>>> tensor_cde = Tensor(data=jnp.ones((4, 5, 6)), leg_names=("c", "d", "e"))
+>>> tensor_abde = tensor_abc @ tensor_cde  # contraction of "c"
+>>> print(tensor_abde)
+Tensor(shape=(2, 3, 5, 6), leg_names=('a', 'b', 'd', 'e'))
+>>> Δt = 0.01
+>>> print(tensor_abde * Δt)  # multiplication by a scalar
+Tensor(shape=(2, 3, 5, 6), leg_names=('a', 'b', 'd', 'e'))
+>>> tensor_abde -= tensor_abde * Δt  # subtraction
+>>> print(tensor_abde)
+Tensor(shape=(2, 3, 5, 6), leg_names=('a', 'b', 'd', 'e'))
+>>> tensor_Dab = Tensor(data=jnp.ones((100, 2, 3)), leg_names=("D", "a", "b")) # "D" means batch dimension
+>>> tensor_Dbc = Tensor(data=jnp.ones((100, 3, 4)), leg_names=("D", "b", "c"))
+>>> tensor_Dac = tensor_Dab @ tensor_Dbc
+>>> print(tensor_Dac)  # The batch dimension "D" is kept.
+Tensor(shape=(100, 2, 4), leg_names=('D', 'a', 'c'))
+```
+
+## Methods
+
+| Name | Description |
+| --- | --- |
+| [as_basis_batch](#pompon.layers.tensor.Tensor.as_basis_batch) | Convert to BasisBatch |
+| [as_core](#pompon.layers.tensor.Tensor.as_core) | Convert to Core |
+| [as_core_basis_batch](#pompon.layers.tensor.Tensor.as_core_basis_batch) | Convert to CoreBasisBatch |
+| [as_left_block_batch](#pompon.layers.tensor.Tensor.as_left_block_batch) | Convert to LeftBlockBatch |
+| [as_ndarray](#pompon.layers.tensor.Tensor.as_ndarray) | Convert to jax.Array (Array) |
+| [as_right_block_batch](#pompon.layers.tensor.Tensor.as_right_block_batch) | Convert to RightBlockBatch |
+| [as_tensor](#pompon.layers.tensor.Tensor.as_tensor) | Convert to Tensor |
+| [as_twodot_core](#pompon.layers.tensor.Tensor.as_twodot_core) | Convert to TwodotCore |
+| [normalize](#pompon.layers.tensor.Tensor.normalize) | Normalize tensor |
+| [scale_to](#pompon.layers.tensor.Tensor.scale_to) | Scale maximum abs element of the tensor to the given scale |
+
+### as_basis_batch { #pompon.layers.tensor.Tensor.as_basis_batch }
+
+`layers.tensor.Tensor.as_basis_batch(name='Phi')`
+
+Convert to BasisBatch
+
+#### Returns
+
+| Type                                            | Description       |
+|-------------------------------------------------|-------------------|
+| [BasisBatch](`pompon.layers.tensor.BasisBatch`) | BasisBatch tensor |
+
+### as_core { #pompon.layers.tensor.Tensor.as_core }
+
+`layers.tensor.Tensor.as_core(name='W')`
+
+Convert to Core
+
+#### Returns
+
+| Type                                | Description   |
+|-------------------------------------|---------------|
+| [Core](`pompon.layers.tensor.Core`) | Core tensor   |
+
+### as_core_basis_batch { #pompon.layers.tensor.Tensor.as_core_basis_batch }
+
+`layers.tensor.Tensor.as_core_basis_batch(name='WPhi')`
+
+Convert to CoreBasisBatch
+
+#### Returns
+
+| Type                                                    | Description           |
+|---------------------------------------------------------|-----------------------|
+| [CoreBasisBatch](`pompon.layers.tensor.CoreBasisBatch`) | CoreBasisBatch tensor |
+
+### as_left_block_batch { #pompon.layers.tensor.Tensor.as_left_block_batch }
+
+`layers.tensor.Tensor.as_left_block_batch(name='L')`
+
+Convert to LeftBlockBatch
+
+#### Returns
+
+| Type                                                    | Description           |
+|---------------------------------------------------------|-----------------------|
+| [LeftBlockBatch](`pompon.layers.tensor.LeftBlockBatch`) | LeftBlockBatch tensor |
+
+### as_ndarray { #pompon.layers.tensor.Tensor.as_ndarray }
+
+`layers.tensor.Tensor.as_ndarray()`
+
+Convert to jax.Array (Array)
+
+#### Returns
+
+| Type                 | Description   |
+|----------------------|---------------|
+| [Array](`jax.Array`) | Array tensor  |
+
+### as_right_block_batch { #pompon.layers.tensor.Tensor.as_right_block_batch }
+
+`layers.tensor.Tensor.as_right_block_batch(name='R')`
+
+Convert to RightBlockBatch
+
+#### Returns
+
+| Type                                                      | Description            |
+|-----------------------------------------------------------|------------------------|
+| [RightBlockBatch](`pompon.layers.tensor.RightBlockBatch`) | RightBlockBatch tensor |
+
+### as_tensor { #pompon.layers.tensor.Tensor.as_tensor }
+
+`layers.tensor.Tensor.as_tensor(name='T')`
+
+Convert to Tensor
+
+#### Returns
+
+| Type                                    | Description   |
+|-----------------------------------------|---------------|
+| [Tensor](`pompon.layers.tensor.Tensor`) | Tensor tensor |
+
+### as_twodot_core { #pompon.layers.tensor.Tensor.as_twodot_core }
+
+`layers.tensor.Tensor.as_twodot_core(name='B')`
+
+Convert to TwodotCore
+
+#### Returns
+
+| Type                                            | Description       |
+|-------------------------------------------------|-------------------|
+| [TwodotCore](`pompon.layers.tensor.TwodotCore`) | TwodotCore tensor |
+
+### normalize { #pompon.layers.tensor.Tensor.normalize }
+
+`layers.tensor.Tensor.normalize()`
+
+Normalize tensor
+
+Tensor is normalized and return the norm of the tensor.
+
+#### Returns
+
+| Type                 | Description                             |
+|----------------------|-----------------------------------------|
+| [Array](`jax.Array`) | norm of the tensor before normalization |
+
+### scale_to { #pompon.layers.tensor.Tensor.scale_to }
+
+`layers.tensor.Tensor.scale_to(scale=None, ord='fro')`
+
+Scale maximum abs element of the tensor to the given scale
+
+#### Parameters
+
+| Name    | Type                                     | Description                                                                                                                         | Default   |
+|---------|------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| `scale` | [float](`float`) \| [Array](`jax.Array`) | scale factor. Defaults to jnp.array(1.0).                                                                                           | `None`    |
+| `ord`   | [str](`str`)                             | norm type to scale either "fro" or "max". Defaults to "fro" (Frobenius norm). "fro" : Frobenius norm "max" : maximum absolute value | `'fro'`   |
+
+#### Returns
+
+| Type                 | Description                               |
+|----------------------|-------------------------------------------|
+| [Array](`jax.Array`) | multiplication factor to scale the tensor |

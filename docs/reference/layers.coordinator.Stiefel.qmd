@@ -1,0 +1,140 @@
+# layers.coordinator.Stiefel { #pompon.layers.coordinator.Stiefel }
+
+`layers.coordinator.Stiefel(self, data, name='U', X_out=None)`
+
+Stiefel manifold class
+
+`.data` is always orthogonal matrix, i.e. Stiefel manifold
+
+## Attributes
+
+| Name   | Type                 | Description                                  |
+|--------|----------------------|----------------------------------------------|
+| data   | [Array](`jax.Array`) | orthogonal matrix with shape (d, f) (d >= f) |
+
+References:
+
+- https://github.com/geoopt/geoopt/blob/master/geoopt/manifolds/stiefel.py
+- https://github.com/geoopt/geoopt/blob/master/geoopt/optim/radam.py
+
+## Methods
+
+| Name | Description |
+| --- | --- |
+| [egrad2rgrad](#pompon.layers.coordinator.Stiefel.egrad2rgrad) | Transform Euclidean gradient to Riemannian gradient |
+| [project_out](#pompon.layers.coordinator.Stiefel.project_out) | Project out some orthogonal vectors from self.data |
+| [proju](#pompon.layers.coordinator.Stiefel.proju) | Project vector $u$ on a tangent space for $x$, |
+| [retr](#pompon.layers.coordinator.Stiefel.retr) | Retraction from point $x$ with given direction $u$ |
+| [retr_transp](#pompon.layers.coordinator.Stiefel.retr_transp) | Perform a retraction + vector transport at once. |
+| [transp](#pompon.layers.coordinator.Stiefel.transp) | Vector transport $𝔗_{x \to y}(v)$ |
+
+### egrad2rgrad { #pompon.layers.coordinator.Stiefel.egrad2rgrad }
+
+`layers.coordinator.Stiefel.egrad2rgrad(x, u)`
+
+Transform Euclidean gradient to Riemannian gradient
+for the point $x$
+
+#### Parameters
+
+| Name   | Type                 | Description                        | Default    |
+|--------|----------------------|------------------------------------|------------|
+| `x`    | [Array](`jax.Array`) | Point on the manifold              | _required_ |
+| `u`    | [Array](`jax.Array`) | Euclidean gradient to pe projected | _required_ |
+
+#### Returns
+
+| Type                 | Description                                |
+|----------------------|--------------------------------------------|
+| [Array](`jax.Array`) | Gradient vector in the Riemannian manifold |
+
+### project_out { #pompon.layers.coordinator.Stiefel.project_out }
+
+`layers.coordinator.Stiefel.project_out(X)`
+
+Project out some orthogonal vectors from self.data
+
+#### Parameters
+
+| Name   | Type                 | Description                                                                                    | Default    |
+|--------|----------------------|------------------------------------------------------------------------------------------------|------------|
+| `X`    | [Array](`jax.Array`) | shape (d, n)   where n is the number of vectors to project out   and d is the input dimension. | _required_ |
+
+For example,
+if you want to project out translational vectors, x, y, z from U,
+you need to set
+X = jnp.array(jnp.vstack([x, y, z]).T)
+where x, y, z have shape (n,).
+
+### proju { #pompon.layers.coordinator.Stiefel.proju }
+
+`layers.coordinator.Stiefel.proju(x, u)`
+
+Project vector $u$ on a tangent space for $x$,
+usually is the same as ``egrad2rgrad``.
+
+#### Parameters
+
+| Name   | Type                 | Description            | Default    |
+|--------|----------------------|------------------------|------------|
+| `x`    | [Array](`jax.Array`) | Point on the manifold  | _required_ |
+| `u`    | [Array](`jax.Array`) | Vector to be projected | _required_ |
+
+#### Returns
+
+| Type                 | Description      |
+|----------------------|------------------|
+| [Array](`jax.Array`) | Projected vector |
+
+### retr { #pompon.layers.coordinator.Stiefel.retr }
+
+`layers.coordinator.Stiefel.retr(x, u)`
+
+Retraction from point $x$ with given direction $u$
+
+#### Parameters
+
+| Name   | Type                 | Description                 | Default    |
+|--------|----------------------|-----------------------------|------------|
+| `x`    | [Array](`jax.Array`) | Point on the manifold       | _required_ |
+| `u`    | [Array](`jax.Array`) | Tangent vector at point $x$ | _required_ |
+
+#### Returns
+
+| Type                 | Description                     |
+|----------------------|---------------------------------|
+| [Array](`jax.Array`) | Retracted point on the manifold |
+
+### retr_transp { #pompon.layers.coordinator.Stiefel.retr_transp }
+
+`layers.coordinator.Stiefel.retr_transp(x, u, v)`
+
+Perform a retraction + vector transport at once.
+
+#### Parameters
+
+| Name   | Type                 | Description                 | Default    |
+|--------|----------------------|-----------------------------|------------|
+| `x`    | [Array](`jax.Array`) | Point on the manifold       | _required_ |
+| `u`    | [Array](`jax.Array`) | Tangent vector at point $x$ | _required_ |
+| `v`    | [Array](`jax.Array`) | Tangent vector at point $x$ | _required_ |
+
+### transp { #pompon.layers.coordinator.Stiefel.transp }
+
+`layers.coordinator.Stiefel.transp(x, y, v)`
+
+Vector transport $𝔗_{x \to y}(v)$
+
+#### Parameters
+
+| Name   | Type                 | Description                  | Default    |
+|--------|----------------------|------------------------------|------------|
+| `x`    | [Array](`jax.Array`) | Start point on the manifold  | _required_ |
+| `y`    | [Array](`jax.Array`) | Target point on the manifold | _required_ |
+| `v`    | [Array](`jax.Array`) | Tangent vector at point $x$  | _required_ |
+
+#### Returns
+
+| Type                 | Description                             |
+|----------------------|-----------------------------------------|
+| [Array](`jax.Array`) | Transported tangent vector at point $y$ |

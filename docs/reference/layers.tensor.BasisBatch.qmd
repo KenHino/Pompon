@@ -1,0 +1,153 @@
+# layers.tensor.BasisBatch { #pompon.layers.tensor.BasisBatch }
+
+`layers.tensor.BasisBatch(self, data, leg_names, name='Phi')`
+
+Basis batch $D$ @ $\phi^{[p]}_{i_p}$.
+
+::: {.callout-note}
+   The batch dimension ``"D"`` must be the first index.
+:::
+
+## Methods
+
+| Name | Description |
+| --- | --- |
+| [as_basis_batch](#pompon.layers.tensor.BasisBatch.as_basis_batch) | Convert to BasisBatch |
+| [as_core](#pompon.layers.tensor.BasisBatch.as_core) | Convert to Core |
+| [as_core_basis_batch](#pompon.layers.tensor.BasisBatch.as_core_basis_batch) | Convert to CoreBasisBatch |
+| [as_left_block_batch](#pompon.layers.tensor.BasisBatch.as_left_block_batch) | Convert to LeftBlockBatch |
+| [as_ndarray](#pompon.layers.tensor.BasisBatch.as_ndarray) | Convert to jax.Array (Array) |
+| [as_right_block_batch](#pompon.layers.tensor.BasisBatch.as_right_block_batch) | Convert to RightBlockBatch |
+| [as_tensor](#pompon.layers.tensor.BasisBatch.as_tensor) | Convert to Tensor |
+| [as_twodot_core](#pompon.layers.tensor.BasisBatch.as_twodot_core) | Convert to TwodotCore |
+| [normalize](#pompon.layers.tensor.BasisBatch.normalize) | Normalize tensor |
+| [scale_to](#pompon.layers.tensor.BasisBatch.scale_to) | Scale maximum abs element of the tensor to the given scale |
+
+### as_basis_batch { #pompon.layers.tensor.BasisBatch.as_basis_batch }
+
+`layers.tensor.BasisBatch.as_basis_batch(name='Phi')`
+
+Convert to BasisBatch
+
+#### Returns
+
+| Type                                            | Description       |
+|-------------------------------------------------|-------------------|
+| [BasisBatch](`pompon.layers.tensor.BasisBatch`) | BasisBatch tensor |
+
+### as_core { #pompon.layers.tensor.BasisBatch.as_core }
+
+`layers.tensor.BasisBatch.as_core(name='W')`
+
+Convert to Core
+
+#### Returns
+
+| Type                                | Description   |
+|-------------------------------------|---------------|
+| [Core](`pompon.layers.tensor.Core`) | Core tensor   |
+
+### as_core_basis_batch { #pompon.layers.tensor.BasisBatch.as_core_basis_batch }
+
+`layers.tensor.BasisBatch.as_core_basis_batch(name='WPhi')`
+
+Convert to CoreBasisBatch
+
+#### Returns
+
+| Type                                                    | Description           |
+|---------------------------------------------------------|-----------------------|
+| [CoreBasisBatch](`pompon.layers.tensor.CoreBasisBatch`) | CoreBasisBatch tensor |
+
+### as_left_block_batch { #pompon.layers.tensor.BasisBatch.as_left_block_batch }
+
+`layers.tensor.BasisBatch.as_left_block_batch(name='L')`
+
+Convert to LeftBlockBatch
+
+#### Returns
+
+| Type                                                    | Description           |
+|---------------------------------------------------------|-----------------------|
+| [LeftBlockBatch](`pompon.layers.tensor.LeftBlockBatch`) | LeftBlockBatch tensor |
+
+### as_ndarray { #pompon.layers.tensor.BasisBatch.as_ndarray }
+
+`layers.tensor.BasisBatch.as_ndarray()`
+
+Convert to jax.Array (Array)
+
+#### Returns
+
+| Type                 | Description   |
+|----------------------|---------------|
+| [Array](`jax.Array`) | Array tensor  |
+
+### as_right_block_batch { #pompon.layers.tensor.BasisBatch.as_right_block_batch }
+
+`layers.tensor.BasisBatch.as_right_block_batch(name='R')`
+
+Convert to RightBlockBatch
+
+#### Returns
+
+| Type                                                      | Description            |
+|-----------------------------------------------------------|------------------------|
+| [RightBlockBatch](`pompon.layers.tensor.RightBlockBatch`) | RightBlockBatch tensor |
+
+### as_tensor { #pompon.layers.tensor.BasisBatch.as_tensor }
+
+`layers.tensor.BasisBatch.as_tensor(name='T')`
+
+Convert to Tensor
+
+#### Returns
+
+| Type                                    | Description   |
+|-----------------------------------------|---------------|
+| [Tensor](`pompon.layers.tensor.Tensor`) | Tensor tensor |
+
+### as_twodot_core { #pompon.layers.tensor.BasisBatch.as_twodot_core }
+
+`layers.tensor.BasisBatch.as_twodot_core(name='B')`
+
+Convert to TwodotCore
+
+#### Returns
+
+| Type                                            | Description       |
+|-------------------------------------------------|-------------------|
+| [TwodotCore](`pompon.layers.tensor.TwodotCore`) | TwodotCore tensor |
+
+### normalize { #pompon.layers.tensor.BasisBatch.normalize }
+
+`layers.tensor.BasisBatch.normalize()`
+
+Normalize tensor
+
+Tensor is normalized and return the norm of the tensor.
+
+#### Returns
+
+| Type                 | Description                             |
+|----------------------|-----------------------------------------|
+| [Array](`jax.Array`) | norm of the tensor before normalization |
+
+### scale_to { #pompon.layers.tensor.BasisBatch.scale_to }
+
+`layers.tensor.BasisBatch.scale_to(scale=None, ord='fro')`
+
+Scale maximum abs element of the tensor to the given scale
+
+#### Parameters
+
+| Name    | Type                                     | Description                                                                                                                         | Default   |
+|---------|------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| `scale` | [float](`float`) \| [Array](`jax.Array`) | scale factor. Defaults to jnp.array(1.0).                                                                                           | `None`    |
+| `ord`   | [str](`str`)                             | norm type to scale either "fro" or "max". Defaults to "fro" (Frobenius norm). "fro" : Frobenius norm "max" : maximum absolute value | `'fro'`   |
+
+#### Returns
+
+| Type                 | Description                               |
+|----------------------|-------------------------------------------|
+| [Array](`jax.Array`) | multiplication factor to scale the tensor |

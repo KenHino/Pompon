@@ -1,0 +1,99 @@
+# optimizer.sweeper.Sweeper { #pompon.optimizer.sweeper.Sweeper }
+
+`optimizer.sweeper.Sweeper(self, optimizer)`
+
+Sweep optimizer for tensor-train
+
+## Methods
+
+| Name | Description |
+| --- | --- |
+| [sweep](#pompon.optimizer.sweeper.Sweeper.sweep) | TT-sweep optimization |
+
+### sweep { #pompon.optimizer.sweeper.Sweeper.sweep }
+
+`optimizer.sweeper.Sweeper.sweep(nsweeps=2, maxdim=30, cutoff=0.01, optax_solver=None, opt_maxiter=1000, opt_tol=None, opt_batchsize=10000, opt_lambda=0.0, onedot=False, use_CG=False, use_scipy=False, use_jax_scipy=False, method='L-BFGS-B', wf=1.0, ord='fro', auto_onedot=True)`
+
+TT-sweep optimization
+
+#### Parameters
+
+| Name            | Type                                                                      | Description                                                                                                                                                                            | Default      |
+|-----------------|---------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| `nsweeps`       | [int](`int`)                                                              | The number of sweeps.                                                                                                                                                                  | `2`          |
+| `maxdim`        | ([int](`int`), [list](`list`)\[[int](`int`)\])                            | the maximum rank of TT-sweep.                                                                                                                                                          | `30`         |
+| `cutoff`        | ([float](`float`), [list](`list`)\[[float](`float`)\])                    | the ratio of truncated singular values for TT-sweep.   When one-dot core is optimized, this parameter is not used.                                                                     | `0.01`       |
+| `optax_solver`  | [optax](`optax`).[GradientTransformation](`optax.GradientTransformation`) | the optimizer for TT-sweep.   Defaults to None. If None, the optimizer is not used.                                                                                                    | `None`       |
+| `opt_maxiter`   | [int](`int`)                                                              | the maximum number of iterations for TT-sweep.                                                                                                                                         | `1000`       |
+| `opt_tol`       | ([float](`float`), [list](`list`)\[[float](`float`)\])                    | the convergence criterion of gradient for TT-sweep.   Defaults to None, i.e., opt_tol = cutoff.                                                                                        | `None`       |
+| `opt_batchsize` | [int](`int`)                                                              | the size of mini-batch for TT-sweep.                                                                                                                                                   | `10000`      |
+| `opt_lambda`    | [float](`float`)                                                          | the L2 regularization parameter for TT-sweep.   Only use_CG=True is supported.                                                                                                         | `0.0`        |
+| `onedot`        | [bool](`bool`)                                                            | whether to optimize one-dot or two-dot core.   Defaults to False, i.e. two-dot core optimization.                                                                                      | `False`      |
+| `use_CG`        | [bool](`bool`)                                                            | whether to use conjugate gradient method for TT-sweep.   Defaults to False. CG is suitable for one-dot core optimization.                                                              | `False`      |
+| `use_scipy`     | [bool](`bool`)                                                            | whether to use scipy.optimize.minimize for TT-sweep.   Defaults to False and use L-BFGS-B method. GPU is not supported.                                                                | `False`      |
+| `use_jax_scipy` | [bool](`bool`)                                                            | whether to use jax.scipy.optimize.minimize for TT-sweep.   Defaults to False. This optimizer is only supports BFGS method, which exhausts GPU memory.                                  | `False`      |
+| `method`        | [str](`str`)                                                              | the optimization method for scipy.optimize.minimize.   Defaults to 'L-BFGS-B'. Note that jax.scipy.optimize.minimize only supports 'BFGS'.                                             | `'L-BFGS-B'` |
+| `wf`            | [float](`float`)                                                          | the weight factor of force $w_f$ in the loss function.                                                                                                                                 | `1.0`        |
+| `ord`           | [str](`str`)                                                              | the norm for scaling the initial core. Defaults to 'fro'.   'max`, maximum absolute value, 'fro', Frobenius norm, are supported.                                                       | `'fro'`      |
+| `auto_onedot`   | [bool](`bool`)                                                            | whether to switch to one-dot core optimization automatically once   the maximum rank is reached. Defaults to True.   This will cause overfitting in the beginning of the optimization. | `True`       |
+
+#### Returns
+
+| Type                                           | Description                                                                                                                |
+|------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
+| [pl](`polars`).[DataFrame](`polars.DataFrame`) | pl.DataFrame: the optimization trace with columns           ``['epoch', 'mse_train', 'mse_test', 'tt_norm', 'tt_ranks']``. |
+
+:::{.callout .note}
+We recommend to use `optax_solver` for initial optimization and
+`use_CG=True` for the last fine-tuning.
+:::
+
+
+Two-dot optimization algorithm
+
+1. Construct original two-dot tensor $B\substack{i_p i_{p+1}\\\beta_{p-1} \beta_{p+1}}$
+
+$$
+   B\substack{i_p i_{p+1}\\\beta_{p-1} \beta_{p+1}}
+   = \sum_{\beta_p} W^{[p]}_{\beta_{p-1} i_p \beta_p} W^{[p+1]}_{\beta_p i_{p+1} \beta_{p+1}}
+$$
+
+2. Shift two-dot tensor $B\substack{i_p i_{p+1}\\\beta_{p-1} \beta_{p+1}}$
+    by $\Delta B\substack{i_p i_{p+1}\\\beta_{p-1} \beta_{p+1}}$
+
+$$
+   B\substack{i_p i_{p+1}\\\beta_{p-1} \beta_{p+1}}
+   \leftarrow
+   B\substack{i_p i_{p+1}\\\beta_{p-1} \beta_{p+1}}
+   + \Delta B\substack{i_p i_{p+1}\\\beta_{p-1} \beta_{p+1}}
+$$
+
+3. Execute singular value decomposition (truncate small singular values as needed)
+
+$$
+   B\substack{i_p i_{p+1}\\ \beta_{p-1} \beta_{p+1}}
+   = \sum_{\beta_p,\beta_p^\prime}^{M^\prime}
+   U\substack{i_p\\ \beta_{p-1}\beta_p}
+   S\substack{\beta_p\enspace \\ \enspace\beta_p^\prime}
+   V\substack{i_{p+1}\\ \beta_p^\prime \beta_{p+1}}
+   \simeq
+   \sum_{\beta_p,\beta_p^\prime}^{M}
+   U\substack{i_p\\ \beta_{p-1}\beta_p}
+   S\substack{\beta_p\enspace \\ \enspace\beta_p^\prime}
+   V\substack{i_{p+1}\\ \beta_p^\prime \beta_{p+1}} \quad (M^\prime \le M)
+$$
+
+4. Update parameters
+
+$$
+   W^{[p]}_{\beta_{p-1} i_p \beta_p} \leftarrow
+   U\substack{i_p\\ \beta_{p-1}\beta_p}
+$$
+$$
+   W^{[p+1]}_{\beta_p i_{p+1} \beta_{p+1}} \leftarrow
+   \sum_{\beta_p^\prime}
+   S\substack{\beta_p\enspace \\ \enspace\beta_p^\prime}
+   V\substack{i_{p+1}\\ \beta_p^\prime \beta_{p+1}}
+$$
+
+5. Shift the center site to the left or right (sweeping)

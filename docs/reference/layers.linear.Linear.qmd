@@ -1,0 +1,18 @@
+# layers.linear.Linear { #pompon.layers.linear.Linear }
+
+`layers.linear.Linear(self, in_dim, out_dim, key)`
+
+
+
+## Methods
+
+| Name | Description |
+| --- | --- |
+| [forward](#pompon.layers.linear.Linear.forward) | y = Ax |
+
+### forward { #pompon.layers.linear.Linear.forward }
+
+`layers.linear.Linear.forward(vector)`
+
+y = Ax
+where A is the weight matrix x is basis

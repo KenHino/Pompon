@@ -1,0 +1,79 @@
+---
+title: "Tutorials"
+listing:
+    - id: "educational-materials"
+      contents:
+          - tensor_train.ipynb
+          - custom-network.ipynb
+      sort: false
+    - id: "model-potential"
+      contents:
+          - 2dpes.ipynb
+          - nd_pes.ipynb
+      sort: false
+    - id: "full-quantum"
+      contents:
+          - h2co_opt.ipynb
+          - h2co_2dcut.ipynb
+          - nnmpo_to_itensor_mpo.ipynb
+          - create-random-mpo.ipynb
+          - itensor_vDMRG.ipynb
+      sort: false
+
+---
+
+## Educational materials
+
+:::{#educational-materials}
+:::
+
+- [Tensor & Tensor train implementation](tensor_train.ipynb)
+- [Custom network combined with Pompon and Flax](custom-network.ipynb)
+
+## Fitting model potential
+
+:::{#model-potential}
+:::
+
+- [2-dimensional potential energy surface](2dpes.ipynb)
+- [n-dimensional potential energy surface](nd_pes.ipynb)
+
+## Full quantum calculation
+
+:::{#full-quantum}
+:::
+
+### Python with Pompon
+- [Optimization](h2co_opt.ipynb)
+- [Visualization](h2co_2dcut.ipynb)
+- [Export MPO to ITensor](nnmpo_to_itensor_mpo.ipynb)
+
+### Julia with ITensors.jl
+- [Create empty MPO](create-random-mpo.ipynb)
+- [phonon DMRG](itensor_vDMRG.ipynb)
+
+## Results of manuscript
+
+- Reference geometry information
+    - [docs/notebook/bagel_h2co_dft.s0.harmonic.json](docs/notebook/data/bagel_h2co_dft.s0.harmonic.json)
+
+- Training data
+    - [docs/notebook/data/x_train.npy](docs/notebook/data/x_train.npy)
+    - [docs/notebook/data/y_train.npy](docs/notebook/data/y_train.npy)
+    - [docs/notebook/data/f_train.npy](docs/notebook/data/f_train.npy)
+    - [docs/notebook/data/x_validation.npy](docs/notebook/data/x_validation.npy)
+    - [docs/notebook/data/y_validation.npy](docs/notebook/data/y_validation.npy)
+    - [docs/notebook/data/f_validation.npy](docs/notebook/data/f_validation.npy)
+    - [docs/notebook/data/x_test.npy](docs/notebook/data/x_test.npy)
+    - [docs/notebook/data/y_test.npy](docs/notebook/data/y_test.npy)
+    - [docs/notebook/data/f_test.npy](docs/notebook/data/f_test.npy)
+
+- Optimization
+    - [docs/notebook/_h2co_opt.py](docs/notebook/h2co_opt.py)
+
+- MPO encoding
+    - [docs/notebook/create-random-mpo.ipynb](docs/notebook/create-random-mpo.ipynb)
+    - [docs/notebook/nnmpo_to_itensor_mpo.ipynb](docs/notebook/nnmpo_to_itensor_mpo.ipynb)
+
+- DMRG calculation
+    - [docs/notebook/itensor_vDMRG.ipynb](docs/notebook/itensor_vDMRG.ipynb)

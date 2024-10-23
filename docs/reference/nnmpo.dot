@@ -1,0 +1,70 @@
+digraph {
+    subgraph cluster_NNMPO {
+        label = "NNMPO";
+        penwidth = 2;  // クラスターの枠線を太くする
+        subgraph cluster_Coordinator {
+            label = "Coordinator";
+            penwidth = 2;  // クラスターの枠線を太くする
+            data_q [label="data['U']", color="orange"];
+            forward_q [label="forward()", color="blue"];
+        }
+        subgraph cluster_Basis {
+            label = "Basis";
+            penwidth = 2;  // クラスターの枠線を太くする
+            subgraph cluster_Phi {
+                label = "Phi";
+                penwidth = 2;  // クラスターの枠線を太くする
+                forward_phi [label="forward()", color="blue"];
+                data_phi [label="data['w'], data['b']", color="orange"];
+            }
+            forward_basis [label="forward()", color="blue"];
+        }
+        subgraph cluster_TensorTrain {
+            label = "TensorTrain";
+            penwidth = 2;  // クラスターの枠線を太くする
+            subgraph cluster_Core {
+                label = "Core";
+                penwidth = 2;  // クラスターの枠線を太くする
+                data_core [label="data['W']", color="orange"];
+            }
+            subgraph cluster_TwodotCore {
+                label = "TwodotCore";
+                penwidth = 2;  // クラスターの枠線を太くする
+                forward_tcore [label="forward()", color="blue"];
+            }
+            subgraph cluster_LeftBlock {
+                label = "LeftBlockBatch";
+                penwidth = 2;  // クラスターの枠線を太くする
+                forward_left [label="forward()", color="blue"];
+            }
+            subgraph cluster_RightBlock {
+                label = "RightBlockBatch";
+                penwidth = 2;  // クラスターの枠線を太くする
+                forward_right [label="forward()", color="blue"];
+            }
+            forward_tt [label="forward()", color="blue"];
+        }
+        forward_model [label="forward()", color="blue"];
+        data_q -> forward_q;
+
+        forward_q -> forward_phi;
+        data_phi -> forward_phi;
+        forward_phi -> forward_basis;
+
+        data_core -> forward_left;
+        forward_basis -> forward_left;
+        data_core -> forward_right;
+        forward_basis -> forward_right;
+
+        forward_left -> forward_tt;
+        forward_tcore -> forward_tt;
+        forward_right -> forward_tt;
+        forward_basis -> forward_tt;
+
+        data_core -> forward_tcore;
+
+        forward_tt -> forward_model;
+    }
+    forward_model -> y_pred;
+    x_train -> forward_q [label="arg"];
+}

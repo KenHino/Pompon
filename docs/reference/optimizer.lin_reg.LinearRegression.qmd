@@ -1,0 +1,20 @@
+# optimizer.lin_reg.LinearRegression { #pompon.optimizer.lin_reg.LinearRegression }
+
+`optimizer.lin_reg.LinearRegression(self, optimizer)`
+
+
+
+## Methods
+
+| Name | Description |
+| --- | --- |
+| [regress](#pompon.optimizer.lin_reg.LinearRegression.regress) | solve the linear regression problem |
+
+### regress { #pompon.optimizer.lin_reg.LinearRegression.regress }
+
+`optimizer.lin_reg.LinearRegression.regress(lam=0.001, maxbatch=5000)`
+
+solve the linear regression problem
+    y = Φ A
+where Φ is the design matrix and A is the coefficient matrix
+    A = (Φ^T Φ + λ I)^{-1} Φ^T y

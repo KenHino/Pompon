@@ -1,0 +1,89 @@
+# optimizer.Optimizer { #pompon.optimizer.Optimizer }
+
+`optimizer.Optimizer(self)`
+
+Base class for optimizers
+
+## Methods
+
+| Name | Description |
+| --- | --- |
+| [get_trace](#pompon.optimizer.Optimizer.get_trace) | Get the optimization trace |
+| [optimize](#pompon.optimizer.Optimizer.optimize) | Optimize the parameters of the model |
+| [setup](#pompon.optimizer.Optimizer.setup) |  |
+| [update](#pompon.optimizer.Optimizer.update) | update whole parameters one step |
+| [update_one](#pompon.optimizer.Optimizer.update_one) | update one parameter |
+
+### get_trace { #pompon.optimizer.Optimizer.get_trace }
+
+`optimizer.Optimizer.get_trace()`
+
+Get the optimization trace
+
+#### Returns
+
+| Type                                           | Description                                                                                                      |
+|------------------------------------------------|------------------------------------------------------------------------------------------------------------------|
+| [pl](`polars`).[DataFrame](`polars.DataFrame`) | pl.DataFrame: the optimization trace with columns ``['epoch', 'mse_train', 'mse_test', 'tt_norm', 'tt_ranks']``. |
+
+### optimize { #pompon.optimizer.Optimizer.optimize }
+
+`optimizer.Optimizer.optimize(epochs=1000, epoch_per_trace=1, epoch_per_log=500, epoch_per_save=100000000, fix_coord=False, fix_basis=False, wf=1.0)`
+
+Optimize the parameters of the model
+
+#### Parameters
+
+| Name              | Type             | Description                                                                                                                           | Default     |
+|-------------------|------------------|---------------------------------------------------------------------------------------------------------------------------------------|-------------|
+| `epochs`          | [int](`int`)     | the number of epochs executed in this execution.                                                                                      | `1000`      |
+| `epoch_per_trace` | [int](`int`)     | the number of epochs                               per recording the optimization trace.                               Defaults to 1. | `1`         |
+| `epoch_per_log`   | [int](`int`)     | the number of epochs per logging.                             Defaults to 500.                                                        | `500`       |
+| `epoch_per_save`  | [int](`int`)     | the number of epochs per saving the model.                              Defaults to 100_000_000.                                      | `100000000` |
+| `fix_coord`       | [bool](`bool`)   | whether to fix the coordinator or not.                          Defaults to False.                                                    | `False`     |
+| `fix_basis`       | [bool](`bool`)   | whether to fix the basis or not.                          Defaults to False.                                                          | `False`     |
+| `wf`              | [float](`float`) | the weight factor for the force.                                                                                                      | `1.0`       |
+
+#### Returns
+
+| Type                                           | Description                                                                                                                |
+|------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
+| [pl](`polars`).[DataFrame](`polars.DataFrame`) | pl.DataFrame: the optimization trace with columns           ``['epoch', 'mse_train', 'mse_test', 'tt_norm', 'tt_ranks']``. |
+
+### setup { #pompon.optimizer.Optimizer.setup }
+
+`optimizer.Optimizer.setup(model, x_train, y_train, *, batch_size=100, shuffle=True, x_test=None, y_test=None, f_train=None, f_test=None, jobname=None, outdir='.')`
+
+#### Parameters
+
+| Name         | Type                                                                     | Description                                                                                                                                                       | Default    |
+|--------------|--------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `model`      | [pompon](`pompon`).[model](`pompon.model`).[Model](`pompon.model.Model`) | the model to be optimized                                                                                                                                         | _required_ |
+| `x_train`    | [Array](`jax.Array`)                                                     | the training data                                                                                                                                                 | _required_ |
+| `y_train`    | [Array](`jax.Array`)                                                     | the training target                                                                                                                                               | _required_ |
+| `batch_size` | [int](`int`)                                                             | the batch size for stochastic method.                          Defaults to 100.                                                                                   | `100`      |
+| `shuffle`    | [bool](`bool`)                                                           | whether to shuffle the data.                        Defaults to True. When batch_size is large,                           it is recommended to set shuffle=False. | `True`     |
+| `x_test`     | [Array](`jax.Array`)                                                     | the test data. Defaults to None.                                                                                                                                  | `None`     |
+| `y_test`     | [Array](`jax.Array`)                                                     | the test target. Defaults to None.                                                                                                                                | `None`     |
+| `f_train`    | [Array](`jax.Array`)                                                     | the force data. Defaults to None.                                                                                                                                 | `None`     |
+| `f_test`     | [Array](`jax.Array`)                                                     | the force data for test.   Defaults to None.   Currently, test MSE is evaluated by only the energy term.                                                          | `None`     |
+| `jobname`    | [str](`str`)                                                             | the name of the job. Defaults to None.                                                                                                                            | `None`     |
+| `outdir`     | [str](`str`)                                                             | the output directory. Defaults to ".".                                                                                                                            | `'.'`      |
+
+#### Returns
+
+| Type                                                | Description                                    |
+|-----------------------------------------------------|------------------------------------------------|
+| [Optimizer](`pompon.optimizer.optimizer.Optimizer`) | the optimizer defined with the model and data. |
+
+### update { #pompon.optimizer.Optimizer.update }
+
+`optimizer.Optimizer.update(params)`
+
+update whole parameters one step
+
+### update_one { #pompon.optimizer.Optimizer.update_one }
+
+`optimizer.Optimizer.update_one(param)`
+
+update one parameter

@@ -1,0 +1,219 @@
+# layers.tt.TensorTrain { #pompon.layers.tt.TensorTrain }
+
+`layers.tt.TensorTrain(self)`
+
+Tensor Train (TT) class
+
+$$
+   A(i_1, i_2, \cdots, i_f) = \sum_{\beta_1,\beta_2,\cdots,\beta_{f-1}} \
+   W^{[1]}_{i_1\beta_1}
+   W^{[2]}_{\beta_1 i_2 \beta_2} \cdots
+   W^{[f]}_{\beta_{f-1}i_f}
+$$
+
+This class object is initialized by either following methods:
+
+1. [`TensorTrain.decompose(tensor)`](#pompon.layers.tt.TensorTrain.decompose): exact tensor train decomposition
+
+    ```{.python}
+    import jax
+    from pompon import TensorTrain
+    tensor = jax.random.normal(jax.random.PRNGKey(0), (3, 3, 3))
+    tt = TensorTrain.decompose(tensor)
+    ```
+
+2. [`TensorTrain.set_custom(cores)`](#pompon.layers.tt.TensorTrain.set_custom): set custom cores
+
+    ```{.python}
+    import jax
+    from pompon import TensorTrain
+    cores = [jax.random.normal(jax.random.PRNGKey(0), (1, 3, 2)),
+             jax.random.normal(jax.random.PRNGKey(1), (2, 3, 2)),
+             jax.random.normal(jax.random.PRNGKey(2), (2, 3, 1))]
+    tt = TensorTrain.set_custom(cores)
+    ```
+
+3. [`TensorTrain.set_random(shape, rank)`](#pompon.layers.tt.TensorTrain.set_random): set random tensor train
+
+    ```{.python}
+    from pompon import TensorTrain
+    tt = TensorTrain.set_random(shape=(3, 3, 3), rank=2)
+    ```
+
+## Attributes
+
+| Name | Description |
+| --- | --- |
+| [ranks](#pompon.layers.tt.TensorTrain.ranks) | List of ranks [$M_1, M_2, \cdots, M_{f-1}$] |
+
+## Methods
+
+| Name | Description |
+| --- | --- |
+| [decompose](#pompon.layers.tt.TensorTrain.decompose) | Initialize with a given tensor by exact tensor train decomposition |
+| [forward](#pompon.layers.tt.TensorTrain.forward) | Evaluate the contraction of the tensor train $A(i_1, i_2, \cdots, i_f)$ |
+| [set_blocks_batch](#pompon.layers.tt.TensorTrain.set_blocks_batch) | Set left and right blocks for batch |
+| [set_center_onedot](#pompon.layers.tt.TensorTrain.set_center_onedot) | Set the center one-dot tensor |
+| [set_center_twodot](#pompon.layers.tt.TensorTrain.set_center_twodot) | Set the center two-dot tensor |
+| [set_custom](#pompon.layers.tt.TensorTrain.set_custom) | Initialize with a given list of cores |
+| [set_ones](#pompon.layers.tt.TensorTrain.set_ones) | Initialize with all ones tensor train |
+| [set_random](#pompon.layers.tt.TensorTrain.set_random) | Initialize with a random tensor train |
+| [shift_center](#pompon.layers.tt.TensorTrain.shift_center) | Shift the center site to the left or right. |
+| [switch_dot](#pompon.layers.tt.TensorTrain.switch_dot) | When bond-dimension reaches the maximum, center cites should be switched to one-dot tensor. |
+| [to_canonical](#pompon.layers.tt.TensorTrain.to_canonical) | Convert tensor-train into canonical form |
+
+### decompose { #pompon.layers.tt.TensorTrain.decompose }
+
+`layers.tt.TensorTrain.decompose(tensor)`
+
+Initialize with a given tensor by exact tensor train decomposition
+
+#### Parameters
+
+| Name     | Type                 | Description                      | Default    |
+|----------|----------------------|----------------------------------|------------|
+| `tensor` | [Array](`jax.Array`) | tensor with shape (N, N, ..., N) | _required_ |
+
+#### Returns
+
+| Type                                          | Description        |
+|-----------------------------------------------|--------------------|
+| [TensorTrain](`pompon.layers.tt.TensorTrain`) | TensorTrain object |
+
+### forward { #pompon.layers.tt.TensorTrain.forward }
+
+`layers.tt.TensorTrain.forward(basis)`
+
+Evaluate the contraction of the tensor train $A(i_1, i_2, \cdots, i_f)$
+with the input tensor $\Phi(i_1, i_2, \cdots, i_f)$
+
+#### Parameters
+
+| Name    | Type                                                                                                | Description                                                                                   | Default    |
+|---------|-----------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|------------|
+| `basis` | [list](`list`)\[[Array](`jax.Array`)\] \| [list](`list`)\[[Tensor](`pompon.layers.tensor.Tensor`)\] | Input tensor $D$ @ $\phi^{[p]}_{i_p}$ with shape $f\times(D, N)$ where $D$ is the batch size. | _required_ |
+
+#### Returns
+
+| Type                 | Description                                                                                                               |
+|----------------------|---------------------------------------------------------------------------------------------------------------------------|
+| [Array](`jax.Array`) | Output tensor $D$ @ $\sum_{i_1,\cdots,i_f} A(i_1,\cdots,i_f) \phi^{[1]}_{i_1} \cdots \phi^{[f]}_{i_f}$ with shape $(D,1)$ |
+
+### set_blocks_batch { #pompon.layers.tt.TensorTrain.set_blocks_batch }
+
+`layers.tt.TensorTrain.set_blocks_batch(basis)`
+
+Set left and right blocks for batch
+
+#### Parameters
+
+| Name    | Type                                   | Description                                                                               | Default    |
+|---------|----------------------------------------|-------------------------------------------------------------------------------------------|------------|
+| `basis` | [list](`list`)\[[Array](`jax.Array`)\] | List of Input tensor $D$ @ $\phi^{[p]}_{i_p}$ with shape (D, N) where D is the batch size | _required_ |
+
+### set_center_onedot { #pompon.layers.tt.TensorTrain.set_center_onedot }
+
+`layers.tt.TensorTrain.set_center_onedot()`
+
+Set the center one-dot tensor
+
+### set_center_twodot { #pompon.layers.tt.TensorTrain.set_center_twodot }
+
+`layers.tt.TensorTrain.set_center_twodot(to_right=True)`
+
+Set the center two-dot tensor
+
+### set_custom { #pompon.layers.tt.TensorTrain.set_custom }
+
+`layers.tt.TensorTrain.set_custom(cores)`
+
+Initialize with a given list of cores
+
+#### Parameters
+
+| Name    | Type                                                                          | Description                                                                     | Default    |
+|---------|-------------------------------------------------------------------------------|---------------------------------------------------------------------------------|------------|
+| `cores` | [list](`list`)\[[Core](`pompon.layers.tensor.Core`) \| [Array](`jax.Array`)\] | list of cores with shape (M, N, M) like   [$W^{[1]}, W^{[2]}, \cdots, W^{[f]}$] | _required_ |
+
+#### Returns
+
+| Type                                          | Description        |
+|-----------------------------------------------|--------------------|
+| [TensorTrain](`pompon.layers.tt.TensorTrain`) | TensorTrain object |
+
+### set_ones { #pompon.layers.tt.TensorTrain.set_ones }
+
+`layers.tt.TensorTrain.set_ones(shape, rank=None)`
+
+Initialize with all ones tensor train
+
+### set_random { #pompon.layers.tt.TensorTrain.set_random }
+
+`layers.tt.TensorTrain.set_random(shape, rank=None, key=None)`
+
+Initialize with a random tensor train
+
+#### Parameters
+
+| Name    | Type                                  | Description                                            | Default    |
+|---------|---------------------------------------|--------------------------------------------------------|------------|
+| `shape` | [tuple](`tuple`)\[[int](`int`), ...\] | shape of the tensor like $(N, N, ..., N)$              | _required_ |
+| `rank`  | [int](`int`)                          | maximum tt-rank of the tensor train. Defaults to None. | `None`     |
+| `key`   | [Array](`jax.Array`)                  | random key. Defaults to None.                          | `None`     |
+
+#### Returns
+
+| Type                                          | Description        |
+|-----------------------------------------------|--------------------|
+| [TensorTrain](`pompon.layers.tt.TensorTrain`) | TensorTrain object |
+
+### shift_center { #pompon.layers.tt.TensorTrain.shift_center }
+
+`layers.tt.TensorTrain.shift_center(to_right, basis, is_onedot_center=False)`
+
+Shift the center site to the left or right.
+
+When ``to_right`` is ``True``, the ``self.center`` is shifted to ``self.center + 1``,
+left blocks are updated as follows:
+
+$$
+   \mathcal{L}^{[p]}_{\beta_{p}} =
+   \sum_{\beta_{p-1}} \sum_{i_{p}} W^{[p]}_{\beta_{p-1} i_{p} \beta_{p}}
+   \phi_{i_{p}}^{[p]} \mathcal{L}^{[p-1]}_{\beta_{p-1}}
+$$
+
+the last term of the right blocks is popped.
+
+#### Parameters
+
+| Name               | Type                                   | Description                                                                                              | Default    |
+|--------------------|----------------------------------------|----------------------------------------------------------------------------------------------------------|------------|
+| `to_right`         | [bool](`bool`)                         | If ``True``, the center site is shifted to the right. Otherwise, the center site is shifted to the left. | _required_ |
+| `basis`            | [list](`list`)\[[Array](`jax.Array`)\] | f-length list of tensor $D$ @ $\phi^{[p]}_{i_p}$ with shape (D, N) where D is the batch size             | _required_ |
+| `is_onedot_center` | [bool](`bool`)                         | If ``True``, the center site is the one-dot tensor.                                                      | `False`    |
+
+### switch_dot { #pompon.layers.tt.TensorTrain.switch_dot }
+
+`layers.tt.TensorTrain.switch_dot(to_onedot, to_right, basis)`
+
+When bond-dimension reaches the maximum, center cites should be switched to one-dot tensor.
+
+#### Parameters
+
+| Name        | Type                                   | Description                                                                                                                   | Default    |
+|-------------|----------------------------------------|-------------------------------------------------------------------------------------------------------------------------------|------------|
+| `to_onedot` | [bool](`bool`)                         | If ``True``, the center site is switched to the one-dot tensor. Otherwise, the center site is switched to the two-dot tensor. | _required_ |
+| `basis`     | [list](`list`)\[[Array](`jax.Array`)\] | f-length list of tensor $D$ @ $\phi^{[p]}_{i_p}$ with shape (D, N) where D is the batch size                                  | _required_ |
+
+### to_canonical { #pompon.layers.tt.TensorTrain.to_canonical }
+
+`layers.tt.TensorTrain.to_canonical(gauge='CR', ord='fro')`
+
+Convert tensor-train into canonical form
+
+#### Parameters
+
+| Name    | Type         | Description                                                          | Default   |
+|---------|--------------|----------------------------------------------------------------------|-----------|
+| `gauge` | [str](`str`) | gauge.  "LC" for left-canonical form, "CR" for right-canonical form. | `'CR'`    |
+| `ord`   | [str](`str`) | order of the norm. Defaults to "fro" which is Frobenius norm.        | `'fro'`   |

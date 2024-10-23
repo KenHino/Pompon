@@ -1,0 +1,228 @@
+# layers.tensor.Core { #pompon.layers.tensor.Core }
+
+`layers.tensor.Core(self, data, leg_names, name='W')`
+
+TT-Core tensor
+
+$$
+   W^{[p]}_{\beta_{p-1} i_p \beta_p}
+$$
+
+## Examples
+
+```python
+>>> import jax.numpy as jnp
+>>> from pompon.layers.tt import TensorTrain
+>>> tt = TensorTrain.decompose(original_tensor=jnp.ones(4, 4, 4, 4))
+>>> tt[0]
+Core(shape=(1, 4, 4), leg_names=('β0', 'i0', 'β1'))
+>>> tt[1]
+Core(shape=(4, 4, 16), leg_names=('β1', 'i1', 'β2'))
+>>> print(B := tt[0] @ tt[1])
+TwodotCore(shape=(1, 4, 4, 16), leg_names=('β0', 'i0', 'i1', 'β2'))
+>>> print(B.svd(rank=2))
+(Core(shape=(1, 4, 2), leg_names=('β0', 'i0', 'β1')), Core(shape=(2, 4, 16), leg_names=('β1', 'i1', 'β2')))
+```
+
+## Methods
+
+| Name | Description |
+| --- | --- |
+| [as_basis_batch](#pompon.layers.tensor.Core.as_basis_batch) | Convert to BasisBatch |
+| [as_core](#pompon.layers.tensor.Core.as_core) | Convert to Core |
+| [as_core_basis_batch](#pompon.layers.tensor.Core.as_core_basis_batch) | Convert to CoreBasisBatch |
+| [as_left_block_batch](#pompon.layers.tensor.Core.as_left_block_batch) | Convert to LeftBlockBatch |
+| [as_ndarray](#pompon.layers.tensor.Core.as_ndarray) | Convert to jax.Array (Array) |
+| [as_right_block_batch](#pompon.layers.tensor.Core.as_right_block_batch) | Convert to RightBlockBatch |
+| [as_tensor](#pompon.layers.tensor.Core.as_tensor) | Convert to Tensor |
+| [as_twodot_core](#pompon.layers.tensor.Core.as_twodot_core) | Convert to TwodotCore |
+| [lq](#pompon.layers.tensor.Core.lq) | LQ decomposition |
+| [normalize](#pompon.layers.tensor.Core.normalize) | Normalize tensor |
+| [qr](#pompon.layers.tensor.Core.qr) | QR decomposition |
+| [scale_to](#pompon.layers.tensor.Core.scale_to) | Scale maximum abs element of the tensor to the given scale |
+
+### as_basis_batch { #pompon.layers.tensor.Core.as_basis_batch }
+
+`layers.tensor.Core.as_basis_batch(name='Phi')`
+
+Convert to BasisBatch
+
+#### Returns
+
+| Type                                            | Description       |
+|-------------------------------------------------|-------------------|
+| [BasisBatch](`pompon.layers.tensor.BasisBatch`) | BasisBatch tensor |
+
+### as_core { #pompon.layers.tensor.Core.as_core }
+
+`layers.tensor.Core.as_core(name='W')`
+
+Convert to Core
+
+#### Returns
+
+| Type                                | Description   |
+|-------------------------------------|---------------|
+| [Core](`pompon.layers.tensor.Core`) | Core tensor   |
+
+### as_core_basis_batch { #pompon.layers.tensor.Core.as_core_basis_batch }
+
+`layers.tensor.Core.as_core_basis_batch(name='WPhi')`
+
+Convert to CoreBasisBatch
+
+#### Returns
+
+| Type                                                    | Description           |
+|---------------------------------------------------------|-----------------------|
+| [CoreBasisBatch](`pompon.layers.tensor.CoreBasisBatch`) | CoreBasisBatch tensor |
+
+### as_left_block_batch { #pompon.layers.tensor.Core.as_left_block_batch }
+
+`layers.tensor.Core.as_left_block_batch(name='L')`
+
+Convert to LeftBlockBatch
+
+#### Returns
+
+| Type                                                    | Description           |
+|---------------------------------------------------------|-----------------------|
+| [LeftBlockBatch](`pompon.layers.tensor.LeftBlockBatch`) | LeftBlockBatch tensor |
+
+### as_ndarray { #pompon.layers.tensor.Core.as_ndarray }
+
+`layers.tensor.Core.as_ndarray()`
+
+Convert to jax.Array (Array)
+
+#### Returns
+
+| Type                 | Description   |
+|----------------------|---------------|
+| [Array](`jax.Array`) | Array tensor  |
+
+### as_right_block_batch { #pompon.layers.tensor.Core.as_right_block_batch }
+
+`layers.tensor.Core.as_right_block_batch(name='R')`
+
+Convert to RightBlockBatch
+
+#### Returns
+
+| Type                                                      | Description            |
+|-----------------------------------------------------------|------------------------|
+| [RightBlockBatch](`pompon.layers.tensor.RightBlockBatch`) | RightBlockBatch tensor |
+
+### as_tensor { #pompon.layers.tensor.Core.as_tensor }
+
+`layers.tensor.Core.as_tensor(name='T')`
+
+Convert to Tensor
+
+#### Returns
+
+| Type                                    | Description   |
+|-----------------------------------------|---------------|
+| [Tensor](`pompon.layers.tensor.Tensor`) | Tensor tensor |
+
+### as_twodot_core { #pompon.layers.tensor.Core.as_twodot_core }
+
+`layers.tensor.Core.as_twodot_core(name='B')`
+
+Convert to TwodotCore
+
+#### Returns
+
+| Type                                            | Description       |
+|-------------------------------------------------|-------------------|
+| [TwodotCore](`pompon.layers.tensor.TwodotCore`) | TwodotCore tensor |
+
+### lq { #pompon.layers.tensor.Core.lq }
+
+`layers.tensor.Core.lq()`
+
+LQ decomposition
+
+
+A.T = qr(A.T) = QR
+
+A = (QR).T = R.T Q.T =: L Q'
+
+#### Returns
+
+| Type                                                                                             | Description                                   |
+|--------------------------------------------------------------------------------------------------|-----------------------------------------------|
+| [tuple](`tuple`)\[[Tensor](`pompon.layers.tensor.Tensor`), [Core](`pompon.layers.tensor.Core`)\] | Tuple[Tensor, Core]: left core and right core |
+
+#### Examples
+
+```python
+>>> import jax.numpy as jnp
+>>> from pompon.layers.tt import TensorTrain
+>>> tt = TensorTrain.decompose(original_tensor=jnp.ones((4, 4, 4, 4)))
+>>> W = tt[1]
+>>> print(W)
+Core(shape=(4, 4, 16), leg_names=('β1', 'i2', 'β2'))
+>>> print(W.rq())
+(Tensor(shape=(4, 4), leg_names=('β1', 'γ1')),
+ Core(shape=(4, 4, 16), leg_names=('γ1', 'i2', 'β2')))
+```
+
+### normalize { #pompon.layers.tensor.Core.normalize }
+
+`layers.tensor.Core.normalize()`
+
+Normalize tensor
+
+Tensor is normalized and return the norm of the tensor.
+
+#### Returns
+
+| Type                 | Description                             |
+|----------------------|-----------------------------------------|
+| [Array](`jax.Array`) | norm of the tensor before normalization |
+
+### qr { #pompon.layers.tensor.Core.qr }
+
+`layers.tensor.Core.qr()`
+
+QR decomposition
+
+#### Returns
+
+| Type                                                                                             | Description                                   |
+|--------------------------------------------------------------------------------------------------|-----------------------------------------------|
+| [tuple](`tuple`)\[[Core](`pompon.layers.tensor.Core`), [Tensor](`pompon.layers.tensor.Tensor`)\] | Tuple[Core, Tensor]: left core and right core |
+
+#### Examples
+
+```python
+>>> import jax.numpy as jnp
+>>> from pompon.layers.tt import TensorTrain
+>>> tt = TensorTrain.decompose(original_tensor=jnp.ones((4, 4, 4, 4)))
+>>> W = tt[0]
+>>> print(W)
+Core(shape=(1, 4, 4), leg_names=('β0', 'i1', 'β1'))
+>>> print(W.qr())
+(Core(shape=(1, 4, 4), leg_names=('β0', 'i1', 'γ1')),
+ Tensor(shape=(4, 4), leg_names=('γ1', 'β1')))
+```
+
+### scale_to { #pompon.layers.tensor.Core.scale_to }
+
+`layers.tensor.Core.scale_to(scale=None, ord='fro')`
+
+Scale maximum abs element of the tensor to the given scale
+
+#### Parameters
+
+| Name    | Type                                     | Description                                                                                                                         | Default   |
+|---------|------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| `scale` | [float](`float`) \| [Array](`jax.Array`) | scale factor. Defaults to jnp.array(1.0).                                                                                           | `None`    |
+| `ord`   | [str](`str`)                             | norm type to scale either "fro" or "max". Defaults to "fro" (Frobenius norm). "fro" : Frobenius norm "max" : maximum absolute value | `'fro'`   |
+
+#### Returns
+
+| Type                 | Description                               |
+|----------------------|-------------------------------------------|
+| [Array](`jax.Array`) | multiplication factor to scale the tensor |

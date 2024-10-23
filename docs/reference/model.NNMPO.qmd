@@ -1,0 +1,425 @@
+# model.NNMPO { #pompon.model.NNMPO }
+
+`model.NNMPO(self, input_size, basis_size, *, hidden_size=None, bond_dim=2, output_size=1, w_scale=1.0, b_scale=0.0, w_dist='uniform', b_dist='linspace', x0=None, activation='silu+moderate', random_tt=True, key=None, X_out=None, fix_bias=False)`
+
+Neural Network Matrix Product Operator
+
+![](nnmpo.svg)
+
+$$
+\begin{align}
+    &V_{\text{NN-MPO}}(\mathbf{x}) = \widetilde{V}_{\text{NN-MPO}}(\mathbf{q}) \notag \\
+    &=
+    \label{eq:nnmpo-full}
+    \sum_{\substack{\rho_1,\rho_2,\cdots\rho_f\\
+            \beta_1,\beta_2,\cdots\beta_{f-1}}}
+    \phi_{\rho_1}(q_1) \cdots \phi_{\rho_f}(q_f)
+    W\substack{\rho_1\\1\beta_1}W\substack{\rho_2\\\beta_1\beta_2}
+    \cdots W\substack{\rho_f\\\beta_{f-1}1}.
+\end{align}
+$$
+
+where $\phi$ is an activation and
+$[q_1, \cdots, q_n] = [x_1, \cdots, x_n]U$ is a linear transformation.
+
+This class mainly consists of three layers:
+
+- [`Coordinator`](layers.coordinator.Coordinator.qmd)
+- [`Basis`](layers.basis.Basis.qmd)
+- [`TensorTrain`](layers.tt.TensorTrain.qmd)
+
+## Parameters
+
+| Name          | Type                 | Description                                                                                                                                     | Default           |
+|---------------|----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
+| `input_size`  | [int](`int`)         | Input size $n$                                                                                                                                  | _required_        |
+| `hidden_size` | [int](`int`)         | Hidden size $f$                                                                                                                                 | `None`            |
+| `basis_size`  | [int](`int`)         | Number of basis $N$ per mode. ($\rho_i=1,2,\cdots,N$)                                                                                           | _required_        |
+| `bond_dim`    | [int](`int`)         | Bond dimension $M$ ($\beta_i=1,2,\cdots,M$).                                                                                                    | `2`               |
+| `output_size` | [int](`int`)         | Output size. Only `output_size=1` is supported so far.                                                                                          | `1`               |
+| `x0`          | [Array](`jax.Array`) | Reference point for the input coordinates.   $q_0=x_0U$ and $w(q-q_0)+b$ will be argument of the basis function.   If None, `x0` will be zeros. | `None`            |
+| `activation`  | [str](`str`)         | activation function. See also [`activations`](layers.activations.qmd).                                                                          | `'silu+moderate'` |
+| `w_scale`     | [float](`float`)     | scaling factor of weights.                                                                                                                      | `1.0`             |
+| `w_dist`      | [str](`str`)         | weight distribution. Available options is written in [`basis`](layers.basis.Basis.qmd).                                                         | `'uniform'`       |
+| `b_scale`     | [float](`float`)     | scaling factor of biases.                                                                                                                       | `0.0`             |
+| `b_dist`      | [str](`str`)         | bias distribution. Available options is written in [`basis`](layers.basis.Basis.qmd).                                                           | `'linspace'`      |
+| `random_tt`   | [bool](`bool`)       | if True, initialize tensor-train randomly.                                                                                                      | `True`            |
+| `X_out`       | [Array](`jax.Array`) | Project out vector from the hidden coordinates. See details on [`Coordinator`](layers.coordinator.Coordinator.qmd).                             | `None`            |
+| `fix_bias`    | [bool](`bool`)       | Whether or not fix $b$.                                                                                                                         | `False`           |
+
+## Examples
+
+```{python}
+import numpy as np
+import pompon
+model = pompon.NNMPO(input_size=3, hidden_size=3, basis_size=5)
+x = np.random.rand(10, 3)
+y = model.forward(x)
+y.shape
+```
+
+## Attributes
+
+| Name | Description |
+| --- | --- |
+| [bond_dim](#pompon.model.NNMPO.bond_dim) | Get maximum bond dimension $M_{\text{max}}$. |
+| [q0](#pompon.model.NNMPO.q0) | Get initial hidden coordinates $q_0=x_0U$ |
+
+## Methods
+
+| Name | Description |
+| --- | --- |
+| [convert_to_mpo](#pompon.model.NNMPO.convert_to_mpo) | Convert to Matrix Product Operator (MPO) |
+| [export_h5](#pompon.model.NNMPO.export_h5) | Export the model to a HDF5 file |
+| [force](#pompon.model.NNMPO.force) | Compute force $-\nabla V_{\text{NN-MPO}}(\mathbf{x})$. |
+| [forward](#pompon.model.NNMPO.forward) | Compute energy (forward propagation) $V_{\text{NN-MPO}}(\mathbf{x})$. |
+| [grad](#pompon.model.NNMPO.grad) | Gradient of loss function with respect to $W$, $w$, $b$ and $U$ |
+| [import_h5](#pompon.model.NNMPO.import_h5) | Import the model from a HDF5 file |
+| [mse](#pompon.model.NNMPO.mse) | Mean squared error |
+| [mse_force](#pompon.model.NNMPO.mse_force) | Mean squared error with force |
+| [plot_basis](#pompon.model.NNMPO.plot_basis) | Plot distribution of $\phi$ |
+| [rescale](#pompon.model.NNMPO.rescale) | Rescale the model |
+| [show_onebody](#pompon.model.NNMPO.show_onebody) | Visualize one-dimensional cut. |
+| [update_blocks_batch](#pompon.model.NNMPO.update_blocks_batch) | Update Left and Right blocks batch of $W$ (tensor-train) with $\phi$. |
+
+### convert_to_mpo { #pompon.model.NNMPO.convert_to_mpo }
+
+`model.NNMPO.convert_to_mpo(basis_ints)`
+
+Convert to Matrix Product Operator (MPO)
+
+$$
+   \mathcal{W}\substack{\sigma_i^\prime\\\beta_{i-1}\beta_i \\ \sigma_{i}}
+   = \sum_{\rho_i=1}^{N_i}
+   W\substack{\rho_i\\\beta_{i-1}\beta_i}
+   \langle\sigma_i^\prime|\phi_{\rho_i}^{(i)}|\sigma_i\rangle
+$$
+$$
+   \hat{V}_{\mathrm{NNMPO}}\left(\pmb{Q}\right)
+   = \sum_{\{\pmb{\beta}\},\{\pmb{\sigma}\},\{\pmb{\sigma}^\prime\}}
+   \mathcal{W}\substack{\sigma_1^\prime\\1\beta_1\\\sigma_1}
+   \mathcal{W}\substack{\sigma_2^\prime\\\beta_1\beta_2\\\sigma_2}
+   \cdots
+   \mathcal{W}\substack{\sigma_f^\prime\\\beta_{f-1}1\\\sigma_f}
+   |\sigma_1^\prime\sigma_2^\prime\cdots\sigma_f^\prime\rangle
+   \langle\sigma_1\sigma_2\cdots\sigma_f|
+$$
+
+#### Parameters
+
+| Name         | Type                                                       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Default    |
+|--------------|------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `basis_ints` | [list](`list`)\[[np](`numpy`).[ndarray](`numpy.ndarray`)\] | List of the integrals between potential basis function and wave function basis function $\langle\sigma_i\|\phi_{\rho_i}^{(i)}\|\sigma_i\rangle$. The length of the list must be equal to the hidden size $f$. The list element is an array with shape $(d_i, N_i, d_i)$ where $d_i$ is the number of basis functions of the wave function and $N_i$ is the number of basis functions of the potential. If you want raw tensor-train data, you can address by ``nnmpo.tt.W.data``. | _required_ |
+
+#### Returns
+
+| Type                                                       | Description                                                                                                                                                                        |
+|------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [list](`list`)\[[np](`numpy`).[ndarray](`numpy.ndarray`)\] | list[np.ndarray]: MPO. The length of the list is equal to the hidden size. The $i$-th element is an array with shape $(M_i, d_i, d_i, M_{i+1})$ where $M_i$ is the bond dimension. |
+
+#### Examples
+
+```{python}
+import numpy as np
+import pompon
+model = pompon.NNMPO(input_size=3, hidden_size=3, basis_size=5)
+# Basis functions can be evaluated ``by model.basis.phis.forward(q, model.q0)``
+# This is just an dummy example.
+basis_ints = [np.random.rand(4, 5, 4) for _ in range(3)]
+mpo = model.convert_to_mpo(basis_ints)
+for i in range(3):
+    print(f"{mpo[i].shape=}")
+```
+
+### export_h5 { #pompon.model.NNMPO.export_h5 }
+
+`model.NNMPO.export_h5(path)`
+
+Export the model to a HDF5 file
+
+#### Parameters
+
+| Name   | Type         | Description           | Default    |
+|--------|--------------|-----------------------|------------|
+| `path` | [str](`str`) | path to the HDF5 file | _required_ |
+
+#### Examples
+
+```python
+import pompon
+model = pompon.NNMPO(input_size=3, hidden_size=3, basis_size=5)
+model.export_h5("/path/to/model.h5")
+```
+
+#### See Also
+
+[import_h5()](#pompon.model.NNMPO.import_h5)
+
+### force { #pompon.model.NNMPO.force }
+
+`model.NNMPO.force(x)`
+
+Compute force $-\nabla V_{\text{NN-MPO}}(\mathbf{x})$.
+
+#### Parameters
+
+| Name   | Type                 | Description                     | Default    |
+|--------|----------------------|---------------------------------|------------|
+| `x`    | [Array](`jax.Array`) | input tensor with shape $(D,n)$ | _required_ |
+
+#### Returns
+
+| Type                 | Description                     |
+|----------------------|---------------------------------|
+| [Array](`jax.Array`) | force tensor with shape $(D,n)$ |
+
+#### Examples
+
+```{python}
+import numpy as np
+import pompon
+model = pompon.NNMPO(input_size=3, hidden_size=3, basis_size=5)
+x = np.random.rand(10, 3)
+f = model.force(x)
+f.shape
+```
+
+### forward { #pompon.model.NNMPO.forward }
+
+`model.NNMPO.forward(x)`
+
+Compute energy (forward propagation) $V_{\text{NN-MPO}}(\mathbf{x})$.
+
+#### Parameters
+
+| Name   | Type                 | Description                                                                                          | Default    |
+|--------|----------------------|------------------------------------------------------------------------------------------------------|------------|
+| `x`    | [Array](`jax.Array`) | input tensor with shape $(D,n)$        where $D$ is the batch size        and $n$ is the input size. | _required_ |
+
+#### Returns
+
+| Type                 | Description                      |
+|----------------------|----------------------------------|
+| [Array](`jax.Array`) | output tensor with shape $(D,1)$ |
+
+#### Examples
+
+```{python}
+import numpy as np
+import pompon
+model = pompon.NNMPO(input_size=3, hidden_size=3, basis_size=5)
+x = np.random.rand(10, 3)
+y = model.forward(x)
+y.shape
+```
+
+### grad { #pompon.model.NNMPO.grad }
+
+`model.NNMPO.grad(x, y, *, loss='mse', twodot_grad=False, onedot_grad=False, basis_grad=False, coordinator_grad=False, q=None, basis=None, use_auto_diff=False, lambda1=0.0001, mu1=0.1, mu2=1.0, f=None, wf=1.0, to_right=True)`
+
+Gradient of loss function with respect to $W$, $w$, $b$ and $U$
+
+#### Parameters
+
+| Name               | Type                                   | Description                                                                                                                                                                                          | Default    |
+|--------------------|----------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `x`                | [Array](`jax.Array`)                   | input tensor with shape $(D,n)$         where $D$ is the batch size and $n$ is the input size.                                                                                                       | _required_ |
+| `y`                | [Array](`jax.Array`)                   | output tensor with shape $(D,1)$                                                                                                                                                                     | _required_ |
+| `loss`             | [str](`str`)                           | loss function.                                                                                                                                                                                       | `'mse'`    |
+| `twodot_grad`      | [bool](`bool`)                         | if True, compute gradient with respect to $B$.                            Defaults to False.                                                                                                         | `False`    |
+| `onedot_grad`      | [bool](`bool`)                         | if True, compute gradient with respect to $C$.                            Defaults to False.                                                                                                         | `False`    |
+| `basis_grad`       | [bool](`bool`)                         | if True, compute gradient with respect to $w$ and $b$.                           Defaults to False.                                                                                                  | `False`    |
+| `coordinator_grad` | [bool](`bool`)                         | if True, compute gradient with respect to $U$.                                 Defaults to False.                                                                                                    | `False`    |
+| `q`                | [Array](`jax.Array`)                   | hidden coordinates with shape $(D,f)$                   where $f$ is the hidden dimension.                   Defaults to None. If None, it is computed from $x$.                                     | `None`     |
+| `basis`            | [list](`list`)\[[Array](`jax.Array`)\] | basis with shape $f\times(D,N)$                             where $N$ is the basis size.                             Defaults to None.                             If None, it is computed from $q$. | `None`     |
+| `use_auto_diff`    | [bool](`bool`)                         | if True, use auto differentiation.                              Otherwise, use analytical formula.                              Defaults to False.                                                   | `False`    |
+| `lambda1`          | [float](`float`)                       | EXPERIMENTAL FEATURE!  regularization parameter.   if not 0, add L1 regularization + entropy penalty.                                                                                                | `0.0001`   |
+| `mu1`              | [float](`float`)                       | EXPERIMENTAL FEATURE! L1 penalty parameter.                                                                                                                                                          | `0.1`      |
+| `mu2`              | [float](`float`)                       | EXPERIMENTAL FEATURE! entropy penalty parameter.                                                                                                                                                     | `1.0`      |
+| `f`                | [Array](`jax.Array`)                   | force with shape $(D,n)$.                                                                                                                                                                            | `None`     |
+| `wf`               | [float](`float`)                       | Weight $w_f$ of force term in loss function.                                                                                                                                                         | `1.0`      |
+| `to_right`         | [bool](`bool`)                         | if True, twodot core index is ``(tt.center, tt.center+1)``   otherwise ``(tt.center-1, tt.center)``.                                                                                                 | `True`     |
+
+#### Returns
+
+| Type                                                                | Description                                        |
+|---------------------------------------------------------------------|----------------------------------------------------|
+| [list](`list`)\[[Parameter](`pompon.layers.parameters.Parameter`)\] | list[Parameter]: list of parameters with gradients |
+
+#### Examples
+
+```{python}
+import numpy as np
+x = np.random.rand(10, 3)
+y = np.random.rand(10, 1)
+f = np.random.rand(10, 3)
+import pompon
+model = pompon.NNMPO(input_size=3, hidden_size=3, basis_size=5)
+params = model.grad(x, y, f=f,
+                    basis_grad=True, coordinator_grad=True)
+for param in params:
+   print(f"{param.name=}, {param.data.shape=}")
+   param.data -= 0.01 * param.grad
+```
+
+### import_h5 { #pompon.model.NNMPO.import_h5 }
+
+`model.NNMPO.import_h5(path)`
+
+Import the model from a HDF5 file
+
+#### Parameters
+
+| Name   | Type         | Description           | Default    |
+|--------|--------------|-----------------------|------------|
+| `path` | [str](`str`) | path to the HDF5 file | _required_ |
+
+#### Returns
+
+| Type                          | Description    |
+|-------------------------------|----------------|
+| [Model](`pompon.model.Model`) | model instance |
+
+#### Examples
+
+```python
+import pompon
+model = pompon.NNMPO.import_h5("/path/to/model.h5")
+```
+
+#### See Also
+
+[export_h5()](#pompon.model.NNMPO.export_h5)
+
+### mse { #pompon.model.NNMPO.mse }
+
+`model.NNMPO.mse(x, y)`
+
+Mean squared error
+
+#### Parameters
+
+| Name   | Type                 | Description                                                                                          | Default    |
+|--------|----------------------|------------------------------------------------------------------------------------------------------|------------|
+| `x`    | [Array](`jax.Array`) | input tensor with shape $(D,n)$        where $D$ is the batch size        and $n$ is the input size. | _required_ |
+| `y`    | [Array](`jax.Array`) | output tensor with shape $(D,1)$                                                                     | _required_ |
+
+#### Returns
+
+| Type             | Description        |
+|------------------|--------------------|
+| [float](`float`) | mean squared error |
+
+### mse_force { #pompon.model.NNMPO.mse_force }
+
+`model.NNMPO.mse_force(x, f)`
+
+Mean squared error with force
+
+#### Parameters
+
+| Name   | Type                 | Description                                                                                          | Default    |
+|--------|----------------------|------------------------------------------------------------------------------------------------------|------------|
+| `x`    | [Array](`jax.Array`) | input tensor with shape $(D,n)$        where $D$ is the batch size        and $n$ is the input size. | _required_ |
+| `f`    | [Array](`jax.Array`) | force tensor with shape $(D,n)$                                                                      | _required_ |
+
+### plot_basis { #pompon.model.NNMPO.plot_basis }
+
+`model.NNMPO.plot_basis(x)`
+
+Plot distribution of $\phi$
+
+#### Parameters
+
+| Name   | Type                 | Description                                                                                          | Default    |
+|--------|----------------------|------------------------------------------------------------------------------------------------------|------------|
+| `x`    | [Array](`jax.Array`) | input tensor with shape $(D,n)$        where $D$ is the batch size        and $n$ is the input size. | _required_ |
+
+#### Examples
+
+```{python}
+import numpy as np
+import pompon
+x = np.random.rand(10, 3)
+model = pompon.NNMPO(input_size=3, hidden_size=3, basis_size=5,
+                     activation="gauss", b_scale=1.0, w_scale=1.0)
+model.plot_basis(x)
+```
+
+### rescale { #pompon.model.NNMPO.rescale }
+
+`model.NNMPO.rescale(input_scale, output_scale)`
+
+Rescale the model
+
+Learning should be done with the normalized input and output.
+But, when the model is used for prediction, it is better to
+rescale the input and output to the original scale.
+
+Input scale and output scale are attributed to the
+``basis.phi.w.data`` and ``tt.norm.data``, respectively.
+
+#### Parameters
+
+| Name           | Type             | Description              | Default    |
+|----------------|------------------|--------------------------|------------|
+| `input_scale`  | [float](`float`) | scaling factor of input  | _required_ |
+| `output_scale` | [float](`float`) | scaling factor of output | _required_ |
+
+#### Examples
+
+```{python}
+import numpy as np
+import pompon
+x = np.random.rand(10, 3)
+y = np.random.rand(10, 1)
+x_scale = x.std()
+y_scale = y.std()
+x /= x_scale
+y /= y_scale
+model = pompon.NNMPO(input_size=3, hidden_size=3, basis_size=5)
+# Some learning process with normalized input and output
+model.rescale(input_scale=x_scale, output_scale=y_scale)
+```
+
+### show_onebody { #pompon.model.NNMPO.show_onebody }
+
+`model.NNMPO.show_onebody()`
+
+Visualize one-dimensional cut.
+
+#### Examples
+
+```{python}
+import pompon
+model = pompon.NNMPO(input_size=3, hidden_size=3, basis_size=5)
+model.show_onebody()
+```
+
+### update_blocks_batch { #pompon.model.NNMPO.update_blocks_batch }
+
+`model.NNMPO.update_blocks_batch(x, q=None, basis=None, is_onedot_center=False)`
+
+Update Left and Right blocks batch of $W$ (tensor-train) with $\phi$.
+
+#### Parameters
+
+| Name               | Type                                   | Description                                                                                                                                                                                                             | Default    |
+|--------------------|----------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `x`                | [Array](`jax.Array`)                   | input tensor with shape $(D,n)$         where $D$ is the batch size                                                                                                                                                     | _required_ |
+| `q`                | [Array](`jax.Array`)                   | hidden coordinates with shape                   $(D,f)$                   where $f$ is the hidden dimension.                   If already computed, set this argument to                   avoid redundant computation. | `None`     |
+| `basis`            | [list](`list`)\[[Array](`jax.Array`)\] | $\phi_{\rho_i}(q_i)$ with shape $(D,N)$.                             If already computed, set this argument                             to avoid redundant computation.                                                 | `None`     |
+| `is_onedot_center` | [bool](`bool`)                         | if True,   update $L[1],...,L[p-1],R[p+1],...R[f]$   with the new basis. Otherwise,   update $L[1],...,L[p-1],R[p+2],...R[f]`$.                                                                                         | `False`    |
+
+#### Examples
+
+```{python}
+import numpy as np
+x = np.random.rand(10, 3)
+import pompon
+model = pompon.NNMPO(input_size=3, hidden_size=3, basis_size=5)
+model.update_blocks_batch(x, is_onedot_center=True)
+print(f"{model.tt.center=}")
+print(f"{model.tt.left_blocks_batch=}")
+print(f"{model.tt.right_blocks_batch=}")
+```

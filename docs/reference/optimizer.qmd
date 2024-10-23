@@ -1,0 +1,14 @@
+# optimizer { #pompon.optimizer }
+
+`optimizer`
+
+Optimizer module
+================
+
+## For tensor-train optimization.
+- [`Sweeper`](optimizer.sweeper.Sweeper.qmd): Sweeper for tensor-train optimization.
+
+## For basis & coordinator optimization.
+- [`Adam`](optimizer.adam.Adam.qmd): Adam optimizer.
+- [`Momentum`](optimizer.momentum.Momentum.qmd): Momentum optimizer.
+- [`SGD`](optimizer.sgd.SGD.qmd): Stochastic gradient descent optimizer.

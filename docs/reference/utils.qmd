@@ -1,0 +1,69 @@
+# utils { #pompon.utils }
+
+`utils`
+
+
+
+## Functions
+
+| Name | Description |
+| --- | --- |
+| [export_mpo_to_itensor](#pompon.utils.export_mpo_to_itensor) | Export MPO to ITensor format |
+| [train_test_split](#pompon.utils.train_test_split) | Split the dataset into training and test sets |
+
+### export_mpo_to_itensor { #pompon.utils.export_mpo_to_itensor }
+
+`utils.export_mpo_to_itensor(mpo, path, name)`
+
+Export MPO to ITensor format
+
+#### Parameters
+
+| Name   | Type                                                                           | Description                                             | Default    |
+|--------|--------------------------------------------------------------------------------|---------------------------------------------------------|------------|
+| `mpo`  | [list](`list`)\[[np](`numpy`).[array](`numpy.array`) \| [Array](`jax.Array`)\] | MPO                                                     | _required_ |
+| `path` | [str](`str`)                                                                   | path to the output file. For example, "/path/to/mpo.h5" | _required_ |
+| `name` | [str](`str`)                                                                   | name of the MPO. For example, "V"                       | _required_ |
+
+#### Returns
+
+| Type         | Description                                                 |
+|--------------|-------------------------------------------------------------|
+| [str](`str`) | path to the filled mpo file (e.g. "/path/to/mpo_filled.h5") |
+
+#### Examples
+
+See also [`docs/notebook/nnmpo_to_itensor_mpo.ipynb`](../notebook/nnmpo_to_itensor_mpo.ipynb)
+and [ITensors.jl](https://itensor.github.io/ITensors.jl/stable/examples/MPSandMPO.html#Write-and-Read-an-MPS-or-MPO-to-Disk-with-HDF5)
+
+### train_test_split { #pompon.utils.train_test_split }
+
+`utils.train_test_split(*arrays, test_size=None, train_size=None, random_state=None, shuffle=True)`
+
+Split the dataset into training and test sets
+
+Almost same interface as sklearn.model_selection.train_test_split
+
+#### Parameters
+
+| Name           | Type                                                         | Description                                                                                                                        | Default   |
+|----------------|--------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| `*arrays`      | ([np](`numpy`).[array](`numpy.array`), [Array](`jax.Array`)) | arrays to be split                                                                                                                 | `()`      |
+| `test_size`    | [float](`float`)                                             | the proportion of the dataset                          to include in the test split.                          Defaults to None.    | `None`    |
+| `train_size`   | [float](`float`)                                             | the proportion of the dataset                           to include in the train split.                           Defaults to None. | `None`    |
+| `random_state` | [int](`int`)                                                 | random seed. Defaults to None.                                                                                                     | `None`    |
+| `shuffle`      | [bool](`bool`)                                               | whether to shuffle the data before splitting.                       Defaults to True.                                              | `True`    |
+
+#### Returns
+
+| Type                                                       | Description                                             |
+|------------------------------------------------------------|---------------------------------------------------------|
+| [list](`list`)\[[np](`numpy`).[ndarray](`numpy.ndarray`)\] | list[np.ndarray]: x_train, x_test, y_train, y_test, ... |
+
+#### Examples
+
+```python
+>>> x_train, x_test, y_train, y_test, f_train, f_test = train_test_split(
+...     x, y, f, test_size=0.2
+... )
+```

@@ -1,0 +1,24 @@
+# layers.parameters { #pompon.layers.parameters }
+
+`layers.parameters`
+
+
+
+## Classes
+
+| Name | Description |
+| --- | --- |
+| [Parameter](#pompon.layers.parameters.Parameter) | Parameter abstract object |
+
+### Parameter { #pompon.layers.parameters.Parameter }
+
+`layers.parameters.Parameter(self, data, name)`
+
+Parameter abstract object
+
+#### Parameters
+
+| Name   | Type                 | Description       | Default    |
+|--------|----------------------|-------------------|------------|
+| `data` | [Array](`jax.Array`) | Data array        | _required_ |
+| `name` | [str](`str`)         | Name of parameter | _required_ |

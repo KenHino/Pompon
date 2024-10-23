@@ -1,0 +1,40 @@
+# API Docs {.doc .doc-index}
+
+## Pompon
+
+Python package for potential optimizer in matrix product operator
+
+| | |
+| --- | --- |
+| [model.Model](model.Model.qmd#pompon.model.Model) | Abstract Model class |
+| [model.NNMPO](model.NNMPO.qmd#pompon.model.NNMPO) | Neural Network Matrix Product Operator |
+| [sop.SumOfProducts](sop.SumOfProducts.qmd#pompon.sop.SumOfProducts) | Function given by sum of products |
+| [sop.OneBody](sop.OneBody.qmd#pompon.sop.OneBody) | Function given by sum of one-body functions |
+| [layers.parameters](layers.parameters.qmd#pompon.layers.parameters) |  |
+| [layers.parameters.Parameter](layers.parameters.Parameter.qmd#pompon.layers.parameters.Parameter) | Parameter abstract object |
+| [layers.tensor](layers.tensor.qmd#pompon.layers.tensor) |  |
+| [layers.tensor.Tensor](layers.tensor.Tensor.qmd#pompon.layers.tensor.Tensor) | Tensor class support "leg_names" for tensor network |
+| [layers.tensor.Core](layers.tensor.Core.qmd#pompon.layers.tensor.Core) | TT-Core tensor |
+| [layers.tensor.TwodotCore](layers.tensor.TwodotCore.qmd#pompon.layers.tensor.TwodotCore) | Two-dot tensor |
+| [layers.tensor.LeftBlockBatch](layers.tensor.LeftBlockBatch.qmd#pompon.layers.tensor.LeftBlockBatch) | Left blocks for batch are calculated |
+| [layers.tensor.RightBlockBatch](layers.tensor.RightBlockBatch.qmd#pompon.layers.tensor.RightBlockBatch) | Right blocks for batch are calculated |
+| [layers.tensor.BasisBatch](layers.tensor.BasisBatch.qmd#pompon.layers.tensor.BasisBatch) | Basis batch $D$ @ $\phi^{[p]}_{i_p}$. |
+| [layers.tt.TensorTrain](layers.tt.TensorTrain.qmd#pompon.layers.tt.TensorTrain) | Tensor Train (TT) class |
+| [layers.coordinator.Stiefel](layers.coordinator.Stiefel.qmd#pompon.layers.coordinator.Stiefel) | Stiefel manifold class |
+| [layers.coordinator.Coordinator](layers.coordinator.Coordinator.qmd#pompon.layers.coordinator.Coordinator) | Coordinator layer class |
+| [layers.basis.Basis](layers.basis.Basis.qmd#pompon.layers.basis.Basis) | Basis layer class |
+| [layers.basis.Phi](layers.basis.Phi.qmd#pompon.layers.basis.Phi) | Phi (1-Basis) layer class |
+| [layers.linear.Linear](layers.linear.Linear.qmd#pompon.layers.linear.Linear) |  |
+| [layers](layers.qmd#pompon.layers) | Layers module |
+| [layers.activations](layers.activations.qmd#pompon.layers.activations) | Activation functions for neural networks. |
+| [optimizer](optimizer.qmd#pompon.optimizer) | Optimizer module |
+| [optimizer.sweeper.sweep](optimizer.sweeper.sweep.qmd#pompon.optimizer.sweeper.sweep) | Tensor-train sweep optimization |
+| [optimizer.sweeper.Sweeper](optimizer.sweeper.Sweeper.qmd#pompon.optimizer.sweeper.Sweeper) | Sweep optimizer for tensor-train |
+| [optimizer.lin_reg.LinearRegression](optimizer.lin_reg.LinearRegression.qmd#pompon.optimizer.lin_reg.LinearRegression) |  |
+| [optimizer.Optimizer](optimizer.Optimizer.qmd#pompon.optimizer.Optimizer) | Base class for optimizers |
+| [optimizer.adam.Adam](optimizer.adam.Adam.qmd#pompon.optimizer.adam.Adam) | Adam optimizer class |
+| [optimizer.momentum.Momentum](optimizer.momentum.Momentum.qmd#pompon.optimizer.momentum.Momentum) |  |
+| [optimizer.sgd.SGD](optimizer.sgd.SGD.qmd#pompon.optimizer.sgd.SGD) | Steepest Gradient Descent (SGD) optimizer class |
+| [dataloader.DataLoader](dataloader.DataLoader.qmd#pompon.dataloader.DataLoader) | DataLoader class for mini-batch training. |
+| [utils](utils.qmd#pompon.utils) |  |
+| [losses](losses.qmd#pompon.losses) |  |

@@ -1,0 +1,21 @@
+line-length = 80
+target-version = "py312"
+extend-exclude = ["docs/notebook/_h2co_opt.py", "*.qmd", "docs/notebook/h2co_opt.ipynb"]
+# extend-include = ["*.ipynb"]
+
+[lint]
+select = [
+  # list of rules are available at https://beta.ruff.rs/docs/rules/
+  "E",  # pycodestyle (error)
+  "W",  # pycodestyle (warning)
+  "F",  # Pyflakes
+  "B",  # flake8-bugbear
+  "I",  # isort
+  "NPY201",  # Numpy 2.0
+]
+ignore = [
+  "B018", # useless-expression
+]
+
+[lint.pydocstyle]
+convention = "google"

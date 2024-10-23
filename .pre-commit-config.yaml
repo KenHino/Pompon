@@ -1,0 +1,46 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: no-commit-to-branch
+        args: [--branch, main]
+      - id: check-added-large-files
+        args: ['--maxkb=5000']
+        exclude: "bagel_h2co_dft.mcmc.trace.mw.au.parquet|slides/lecture_files"
+      - id: check-docstring-first
+      - id: check-yaml
+      - id: check-toml
+      - id: end-of-file-fixer
+        exclude: '\.qmd$|docs/object.json'
+      - id: trailing-whitespace
+        exclude: '\.qmd$'
+
+  - repo: local
+    hooks:
+      - id: format
+        name: format
+        entry: uv run ruff format .
+        language: system
+        pass_filenames: false
+        files: "^(pompon/tests)"
+
+      - id: fix-lint
+        name: fix-lint
+        entry: uv run ruff check --fix .
+        language: system
+        pass_filenames: false
+        files: "^(pompon/tests)"
+
+      - id: typecheck
+        name: mypy
+        entry: uv run mypy --install-types --non-interactive pompon
+        language: system
+        pass_filenames: false
+        files: "^(pompon/)"
+
+      - id: pytest
+        name: pytest
+        entry: cd tests/build && uv run pytest -n auto ..
+        language: system
+        pass_filenames: false
+        files: "^(pompon/|tests/)"

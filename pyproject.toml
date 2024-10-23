@@ -1,0 +1,43 @@
+[project]
+name = "pompon"
+version = "0.1.0"
+description = "Potential Optimizer in Matrix Product Operator Network"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "h5py>=3.12.1",
+    "jax>=0.4.33",
+    "jaxlib>=0.4.33",
+    "matplotlib>=3.9.2",
+    "numpy>=2.1.1",
+    "optax>=0.2.3",
+    "polars>=1.9.0",
+    "scipy>=1.14.1",
+    "tqdm>=4.66.5",
+    "types-tqdm>=4.66.0.20240417",
+]
+
+[project.optional-dependencies]
+discvar = [
+    "discvar>=0.0.1",
+]
+
+[tool.uv]
+dev-dependencies = [
+    "jupyterlab>=4.2.5",
+    "mypy>=1.11.2",
+    "pre-commit>=3.8.0",
+    "pytest-xdist>=3.6.1",
+    "pytest>=8.3.3",
+    "quarto-cli>=1.5.57",
+    "quartodoc>=0.7.6",
+    "ruff>=0.6.8",
+    "seaborn>=0.13.2",
+]
+
+[tool.uv.sources]
+discvar = { git = "https://github.com/KenHino/Discvar.git" }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

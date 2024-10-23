@@ -1,0 +1,157 @@
+# sop.OneBody { #pompon.sop.OneBody }
+
+`sop.OneBody(self, input_size, hidden_size, basis_size, output_size=1, w_scale=1.0, b_scale=1.0, w_dist='uniform', b_dist='linspace', x0=None, activation='moderate+silu', key=None, X_out=None, fix_bias=False)`
+
+Function given by sum of one-body functions
+
+$$
+   f(q_1, q_2, \ldots, q_f) =
+   \sum_{p=1}^{f} \sum_{\rho_p} W_{\rho_p}^{(p)}
+   \phi_{\rho_p}(w_{\rho_p}^{(p)} q_p+b_{\rho_p}^{(p)})
+$$
+
+## Attributes
+
+| Name | Description |
+| --- | --- |
+| [q0](#pompon.sop.OneBody.q0) | Get initial hidden coordinates $q_0=x_0U$ |
+
+## Methods
+
+| Name | Description |
+| --- | --- |
+| [export_h5](#pompon.sop.OneBody.export_h5) | Export the model to a HDF5 file |
+| [import_h5](#pompon.sop.OneBody.import_h5) | Import the model from a HDF5 file |
+| [mse](#pompon.sop.OneBody.mse) | Mean squared error |
+| [mse_force](#pompon.sop.OneBody.mse_force) | Mean squared error with force |
+| [plot_basis](#pompon.sop.OneBody.plot_basis) | Plot distribution of $\phi$ |
+| [show_onebody](#pompon.sop.OneBody.show_onebody) | Visualize one-dimensional cut. |
+| [to_nnmpo](#pompon.sop.OneBody.to_nnmpo) | Convert to NNMPO model |
+
+### export_h5 { #pompon.sop.OneBody.export_h5 }
+
+`sop.OneBody.export_h5(path)`
+
+Export the model to a HDF5 file
+
+#### Parameters
+
+| Name   | Type         | Description           | Default    |
+|--------|--------------|-----------------------|------------|
+| `path` | [str](`str`) | path to the HDF5 file | _required_ |
+
+#### Examples
+
+```python
+import pompon
+model = pompon.NNMPO(input_size=3, hidden_size=3, basis_size=5)
+model.export_h5("/path/to/model.h5")
+```
+
+#### See Also
+
+[import_h5()](#pompon.model.NNMPO.import_h5)
+
+### import_h5 { #pompon.sop.OneBody.import_h5 }
+
+`sop.OneBody.import_h5(path)`
+
+Import the model from a HDF5 file
+
+#### Parameters
+
+| Name   | Type         | Description           | Default    |
+|--------|--------------|-----------------------|------------|
+| `path` | [str](`str`) | path to the HDF5 file | _required_ |
+
+#### Returns
+
+| Type                          | Description    |
+|-------------------------------|----------------|
+| [Model](`pompon.model.Model`) | model instance |
+
+#### Examples
+
+```python
+import pompon
+model = pompon.NNMPO.import_h5("/path/to/model.h5")
+```
+
+#### See Also
+
+[export_h5()](#pompon.model.NNMPO.export_h5)
+
+### mse { #pompon.sop.OneBody.mse }
+
+`sop.OneBody.mse(x, y)`
+
+Mean squared error
+
+#### Parameters
+
+| Name   | Type                 | Description                                                                                          | Default    |
+|--------|----------------------|------------------------------------------------------------------------------------------------------|------------|
+| `x`    | [Array](`jax.Array`) | input tensor with shape $(D,n)$        where $D$ is the batch size        and $n$ is the input size. | _required_ |
+| `y`    | [Array](`jax.Array`) | output tensor with shape $(D,1)$                                                                     | _required_ |
+
+#### Returns
+
+| Type             | Description        |
+|------------------|--------------------|
+| [float](`float`) | mean squared error |
+
+### mse_force { #pompon.sop.OneBody.mse_force }
+
+`sop.OneBody.mse_force(x, f)`
+
+Mean squared error with force
+
+#### Parameters
+
+| Name   | Type                 | Description                                                                                          | Default    |
+|--------|----------------------|------------------------------------------------------------------------------------------------------|------------|
+| `x`    | [Array](`jax.Array`) | input tensor with shape $(D,n)$        where $D$ is the batch size        and $n$ is the input size. | _required_ |
+| `f`    | [Array](`jax.Array`) | force tensor with shape $(D,n)$                                                                      | _required_ |
+
+### plot_basis { #pompon.sop.OneBody.plot_basis }
+
+`sop.OneBody.plot_basis(x)`
+
+Plot distribution of $\phi$
+
+#### Parameters
+
+| Name   | Type                 | Description                                                                                          | Default    |
+|--------|----------------------|------------------------------------------------------------------------------------------------------|------------|
+| `x`    | [Array](`jax.Array`) | input tensor with shape $(D,n)$        where $D$ is the batch size        and $n$ is the input size. | _required_ |
+
+#### Examples
+
+```{python}
+import numpy as np
+import pompon
+x = np.random.rand(10, 3)
+model = pompon.NNMPO(input_size=3, hidden_size=3, basis_size=5,
+                     activation="gauss", b_scale=1.0, w_scale=1.0)
+model.plot_basis(x)
+```
+
+### show_onebody { #pompon.sop.OneBody.show_onebody }
+
+`sop.OneBody.show_onebody()`
+
+Visualize one-dimensional cut.
+
+#### Examples
+
+```{python}
+import pompon
+model = pompon.NNMPO(input_size=3, hidden_size=3, basis_size=5)
+model.show_onebody()
+```
+
+### to_nnmpo { #pompon.sop.OneBody.to_nnmpo }
+
+`sop.OneBody.to_nnmpo()`
+
+Convert to NNMPO model

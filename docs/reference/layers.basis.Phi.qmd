@@ -1,0 +1,84 @@
+# layers.basis.Phi { #pompon.layers.basis.Phi }
+
+`layers.basis.Phi(self, basis_size, activation, key=None, w_dist='uniform', w_scale=1.0, b_dist='linspace', b_scale=1.0, imode=0)`
+
+Phi (1-Basis) layer class
+
+This class has two vector data $\boldsymbol{w}^{(p)}$ and
+$\boldsymbol{b}^{(p)}$ which are the weight and bias, respectively.
+
+The forward transformation is given by
+
+$$
+   D @ \phi^{(p)}_{\rho_p}
+   = \phi(w^{(p)}_{\rho_p} (D @ \boldsymbol{q}[p]) + b^{(p)}_{\rho_p})
+$$
+
+where $\phi$ is the activation function,
+$D$ is the size of the batch,
+$\boldsymbol{q}[p]$ is the hidden coordinates of the p-th mode,
+$\rho_p = 1, 2, \cdots, N$ is the index of the basis,
+$w^{(p)}_{\rho_p}$ is the weight, and
+$b^{(p)}_{\rho_p}$ is the bias.
+
+:::{ .callout-note }
+   $\phi^{(p)}_{0}$ is fixed to 1.
+:::
+
+## Parameters
+
+| Name         | Type                 | Description                                                                                      | Default      |
+|--------------|----------------------|--------------------------------------------------------------------------------------------------|--------------|
+| `basis_size` | [int](`int`)         | number of basis N                                                                                | _required_   |
+| `activation` | [str](`str`)         | activation function                                                                              | _required_   |
+| `key`        | [Array](`jax.Array`) | random key. Defaults to None.                                                                    | `None`       |
+| `w_dist`     | [str](`str`)         | distribution of the weight. Available distributions are "uniform", "normal", "ones".             | `'uniform'`  |
+| `w_scale`    | [float](`float`)     | scale of the weight. Defaults to 1.0.                                                            | `1.0`        |
+| `b_dist`     | [str](`str`)         | distribution of the bias.                                                                        | `'linspace'` |
+| `b_scale`    | [float](`float`)     | scale of the bias. Defaults to 1.0. Available distributions are "uniform", "normal", "linspace". | `1.0`        |
+| `imode`      | [int](`int`)         | index of the mode p                                                                              | `0`          |
+
+## Methods
+
+| Name | Description |
+| --- | --- |
+| [forward](#pompon.layers.basis.Phi.forward) | Forward transformation |
+| [partial](#pompon.layers.basis.Phi.partial) | Partial derivative of the basis |
+
+### forward { #pompon.layers.basis.Phi.forward }
+
+`layers.basis.Phi.forward(q, q0)`
+
+Forward transformation
+
+#### Parameters
+
+| Name   | Type                 | Description                                                                           | Default    |
+|--------|----------------------|---------------------------------------------------------------------------------------|------------|
+| `q`    | [Array](`jax.Array`) | hidden coordinates of the p-th mode with shape (D,) where D is the size of the batch. | _required_ |
+
+#### Returns
+
+| Type                 | Description                                                                       |
+|----------------------|-----------------------------------------------------------------------------------|
+| [Array](`jax.Array`) | basis with shape (D, N) where D is the size of the batch and N is the basis size. |
+
+### partial { #pompon.layers.basis.Phi.partial }
+
+`layers.basis.Phi.partial(q, q0)`
+
+Partial derivative of the basis
+with respect to the q-th hidden coordinate.
+
+#### Parameters
+
+| Name   | Type                 | Description                                                          | Default    |
+|--------|----------------------|----------------------------------------------------------------------|------------|
+| `q`    | [Array](`jax.Array`) | hidden coordinates with shape (D,) where D is the size of the batch. | _required_ |
+| `q0`   | [Array](`jax.Array`) | hidden coordinates with shape (N-1,) where N is the basis size.      | _required_ |
+
+#### Returns
+
+| Type                 | Description                                                                                 |
+|----------------------|---------------------------------------------------------------------------------------------|
+| [Array](`jax.Array`) | ∂φ(wq + b) / ∂q with shape (D, N) where D is the size of the batch and N is the basis size. |

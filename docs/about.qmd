@@ -1,0 +1,17 @@
+---
+title: "What is Pompon?"
+---
+
+Pompon is a Python package for optimizing matrix product operator to
+randomly sampled molecular potential energy surfaces.
+
+## How to build document
+```
+$ quartodoc build
+$ quarto preview
+```
+
+### publish
+```
+$ quarto publish
+```

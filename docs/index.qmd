@@ -1,0 +1,172 @@
+---
+title: "Home"
+---
+
+Welcome to Pompon documentation!!
+
+## What is Pompon?
+Pompon is a Python library for optimizing matrix product operator (MPO) to randomly sampled points on a potential energy surface (PES).
+MPO is suitable for high-dimensional integral and facilitates first-principles calculation in both time-dependent and time-independent manners.
+
+## Architecture
+We name our model a neural network matrix product operator ([`NN-MPO`](reference/model.NNMPO.qmd))
+and it is represented by the following equation:
+$$
+\begin{eqnarray}
+  \label{eq:nnmpo}
+  {V}_{\text{NN-MPO}} (\mathbf{x})&=& \Phi(\mathbf{q})\mathbf{W} \\
+  \mathbf{q} &=& \mathbf{x} U
+\end{eqnarray}
+$$
+where $U \in \text{St}(f,n) = \{U \in \mathbb{R}^{n\times f} | U^\top U = I_f\}$ is the
+orthogonal linear transformation matrix from
+the input mass-weighted coordinates $\mathbf{x} \in \mathbb{R}^{1\times n}$ to the
+latent space coordinates $\mathbf{q} \in \mathbb{R}^{1\times f}$:
+$$
+\begin{equation}
+  \label{eq:coordinator}
+  \begin{bmatrix}
+    q_1 & q_2 & \cdots & q_f
+  \end{bmatrix}
+  =
+  \begin{bmatrix}
+    x_1 & x_2 & \cdots & x_n
+  \end{bmatrix}
+  U.
+\end{equation}
+$$
+We call $U$ as [`Coordinator`](reference/layers.coordinator.Coordinator.qmd), $n$ is `input_size`, and $f$ is `hidden_size`.
+
+NN-MPO can be interpreted as a sort of kernel method,
+by regarding $\Phi$ as a design matrix and $\mathbf{W}$ as kernel weights.
+$\Phi(\mathbf{q})$ is represented by tensor product basis:
+$$
+\begin{equation}
+  \Phi_{\rho_1\rho_2\cdots\rho_f}
+  = \{\phi_{\rho_1}(q_1)\} \otimes \{\phi_{\rho_2}(q_2)\}
+  \otimes \cdots \otimes \{\phi_{\rho_f}(q_f)\}
+\end{equation}
+$$
+where $N$ is the number of basis functions (`basis_size`), $\rho_i$ takes $\rho_i=1, 2, \cdots, N$,
+and the total expansion number reaches $N^f$, which enhances
+the model representational power.
+
+Choosing the basis function $\phi_{\rho_i}$, `activation` argument or [`layers.activations`](reference/layers.activations.qmd),  is crucial for the model performance.
+The input to the activation is written by
+$$
+\begin{equation}
+  q_{\rho_i}^{(i)} = w_{\rho_i}^{(i)}\left(q_i-\bar{q}_{\rho_i}^{(i)}\right)
+  + b_{\rho_i}^{(i)}
+\end{equation}
+$$
+and $\bar{q}_{\rho_i}^{(i)} = \sum_j \bar{x}_{\rho_i}^{(j)} U_{ji}$.
+It could be seemed that $\bar{q}_{\rho_i}^{(i)}$ is redundant,
+$-w_{\rho_i}^{(i)}\bar{q}_{\rho_i}^{(i)}$ is absorbed into $b_{\rho_i}^{(i)}$,
+however,
+finding a good initial distribution of $b_{\rho_i}^{(i)}$ stable to the
+drastic change of coordinator $U$ is somehow difficult.
+Therefore, like kernel method, we first chose a $\bar{x}_{\rho_i}^{(j)}$ (`x0`) from training data
+distribution and set $b_{\rho_i}^{(i)}=0$ (`b_scale=0.0`).
+Besides $\mathbf{W}$, the traing parameters are $U$, $w_{\rho_i}^{(i)}$, and $b_{\rho_i}^{(i)}$.
+
+Once the basis function $\Phi$ has been determined, the weight $\mathbf{W}$ is optimized.
+While the size of $\mathbf{W}$ can naively reach $N^f$,
+we can reduce the number of parameters by using the TT ([`TensorTrain`](reference/layers.tt.TensorTrain.qmd)) structure:
+$$
+\begin{equation}
+  \label{eq:tn}
+  \mathbf{W} = \mathbf{W}^{(1)}\mathbf{W}^{(2)}\cdots\mathbf{W}^{(f)}
+\end{equation}
+$$
+in other form,
+$$
+\begin{equation}
+  W_{\rho_1\rho_2\cdots\rho_f}
+  = \sum_{\beta_{1}\beta_{2}\cdots\beta_{f-1}}
+  W\substack{\rho_1\\1\beta_1}
+  W\substack{\rho_2\\\beta_1\beta_2}
+  \cdots
+  W\substack{\rho_f\\\beta_{f-1}1}
+\end{equation}
+$$
+where each [`Core`](reference/layers.tensor.Core.qmd) tensor
+$W\substack{\rho_i\\\beta_{i-1}\beta_i} \in \mathbb{R}^{M_{i-1}\times N\times M_i}$
+can be given by low-rank approximation, which enables not only the reduction of
+parameter but also mitigating complexity errors such as overfitting.
+
+The connecting index $\beta$
+takes $\beta=1, 2, \cdots, M$ where $M$
+is called bond dimension, link dimension, or TT-rank (`bond_dim` argument).
+The full formulation of NN-MPO is written by the following equations:
+$$
+\begin{align}
+  &V_{\text{NN-MPO}}(\mathbf{x}) = \widetilde{V}_{\text{NN-MPO}}(\mathbf{q}) \notag \\
+  &=
+  \label{eq:nnmpo-full}
+  \sum_{\substack{\rho_1,\rho_2,\cdots\rho_f\\
+        \beta_1,\beta_2,\cdots\beta_{f-1}}}
+  \phi_{\rho_1}(q_1) \cdots \phi_{\rho_f}(q_f)
+  W\substack{\rho_1\\1\beta_1}W\substack{\rho_2\\\beta_1\beta_2}
+  \cdots W\substack{\rho_f\\\beta_{f-1}1}.
+\end{align}
+$$
+
+## Optimization
+We set the loss function $\mathcal{L}$
+as a sum of energy and force mean squared errors ([MSE](reference/losses.html#pompon.losses.mse)).
+$$
+\begin{equation}
+  \label{eq:loss}
+  \mathcal{L} =
+  \mathcal{L}_{\text{energy}}
+  + w_f \mathcal{L}_{\text{force}}
+\end{equation}
+$$
+$$
+\begin{equation}
+  \label{eq:loss-energy}
+  \mathcal{L}_{\text{energy}} =
+  \frac{1}{|\mathcal{D}|}\sum_{\mathbf{x}, V\in\mathcal{D}}
+  \frac{1}{2}
+  \left\|
+    V_{\text{NN-MPO}}(\mathbf{x}) - V
+  \right\|^2
+\end{equation}
+$$
+$$
+\begin{align}
+  \label{eq:loss-force}
+  \mathcal{L}_{\text{force}}
+  &=
+  \frac{1}{|\mathcal{D}|}\sum_{\mathbf{x}, \mathbf{F}\in\mathcal{D}}
+  \frac{1}{2}
+  \left\|
+    - \frac{\partial V_{\text{NN-MPO}}(\mathbf{x})}{\partial \mathbf{x}}
+    - \mathbf{F}
+  \right\|^2
+  \\
+  &=
+  \frac{1}{|\mathcal{D}|}\sum_{\mathbf{x}, \mathbf{F}\in\mathcal{D}}
+  \frac{1}{2}
+  \left\|
+    - \frac{\partial \tilde{V}_{\text{NN-MPO}}(\mathbf{q})}{\partial \mathbf{q}}
+    - \mathbf{F}U
+  \right\|^2
+\end{align}
+$$
+The gradient of $w_{\rho_i}^{(i)}, b_{\rho_i}^{(i)}$ and $U$ to the loss function
+$\mathcal{L}$ can be evaluated by the automatic differentiation facilitated by
+the deep learning framework. In our implementation, [`JAX`](https://jax.readthedocs.io/en/latest/) library
+was used.
+These parameters are updated by the [Adam](reference/optimizer.adam.Adam.qmd) optimizer.
+In addition, we used QR decomposition to retract $U$
+onto the [Stiefel manifold](reference/layers.coordinator.Stiefel.qmd) to keep the orthogonality
+for each step.
+We referred to the Riemannian Adam optimization algorithm in [`geoopt`](https://geoopt.readthedocs.io/en/latest/) library.
+
+TT-optimization is complicated, we leave the details in the [manuscript](). The sweep optimization is implemented in the [`Sweeper`](reference/optimizer.sweeper.Sweeper.qmd).
+
+## Contents
+
+- [Tutorials](notebook/index.qmd)
+- [API Docs](reference/index.qmd)

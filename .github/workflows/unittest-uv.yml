@@ -1,0 +1,26 @@
+name: unittest-uv
+on:
+  push:
+    paths:
+      - 'uv.lock'
+      - 'pyproject.toml'
+      - 'pompon/**'
+      - 'tests/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: uv-install
+      run: curl -LsSf https://astral.sh/uv/install.sh | sh
+    - name: pompon-dev-install
+      run: uv sync --extra discvar
+    - name: pytest
+      continue-on-error: true
+      id: pytest
+      run: uv run pytest
+    - name: pytest rerun failed
+      if: ${{ steps.pytest.outcome == 'failure'}}
+      run: uv run pytest --lf --showlocals --tb=long --log-level=DEBUG

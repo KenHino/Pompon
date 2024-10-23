@@ -1,0 +1,59 @@
+# layers.coordinator.Coordinator { #pompon.layers.coordinator.Coordinator }
+
+`layers.coordinator.Coordinator(self, input_size, hidden_size, seed=0, random=False, X_out=None, adjacency_blocks=None)`
+
+Coordinator layer class
+
+This class has a matrix data, which
+transforms the input coordinates to the hidden coordinates.
+
+The data is optimized to be orthogonal, i.e. Stiefel manifold
+
+$$
+   \mathrm{St}(f, d) =
+   \{ U \in \mathbb{R}^{d \times f} \mid U^\top U = I_f \}
+$$
+
+Forward transformation is given by
+
+$$
+   D @ \boldsymbol{q} = \left(D @ \boldsymbol{x}\right) U
+$$
+
+where row vector $\boldsymbol{q} \in \mathbb{R}^f$
+is the hidden coordinates
+and column vector $\boldsymbol{x} \in \mathbb{R}^d$
+is the input coordinates.
+
+## Parameters
+
+| Name          | Type           | Description                                                                                                                                                    | Default    |
+|---------------|----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `input_size`  | [int](`int`)   | input dimension $d$                                                                                                                                            | _required_ |
+| `hidden_size` | [int](`int`)   | hidden dimension $f$                                                                                                                                           | _required_ |
+| `seed`        | [int](`int`)   | random seed                                                                                                                                                    | `0`        |
+| `random`      | [bool](`bool`) | if True, the data is initialized by random orthogonal matrix using QR decomposition. Otherwise, the data is initialized by identity matrix. Defaults to False. | `False`    |
+
+## Methods
+
+| Name | Description |
+| --- | --- |
+| [forward](#pompon.layers.coordinator.Coordinator.forward) | Forward transformation |
+
+### forward { #pompon.layers.coordinator.Coordinator.forward }
+
+`layers.coordinator.Coordinator.forward(x)`
+
+Forward transformation
+
+#### Parameters
+
+| Name   | Type                 | Description                                                                                                                       | Default    |
+|--------|----------------------|-----------------------------------------------------------------------------------------------------------------------------------|------------|
+| `x`    | [Array](`jax.Array`) | input coordinates $D$ @ $\boldsymbol{x}$ with shape ($D$, $d$) where $D$ is the size of the batch and $d$ is the input dimension. | _required_ |
+
+#### Returns
+
+| Type                 | Description                                                                                                                   |
+|----------------------|-------------------------------------------------------------------------------------------------------------------------------|
+| [Array](`jax.Array`) | hidden coordinates $\boldsymbol{q}$ with shape ($D$, $f$) where $D$ is the size of the batch and $f$ is the hidden dimension. |

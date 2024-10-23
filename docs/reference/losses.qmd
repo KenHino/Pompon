@@ -1,0 +1,150 @@
+# losses { #pompon.losses }
+
+`losses`
+
+
+
+## Functions
+
+| Name | Description |
+| --- | --- |
+| [L1_entropy](#pompon.losses.L1_entropy) | Entropy of the basis $\phi$. |
+| [L1_norm](#pompon.losses.L1_norm) | L1 norm of the basis $\phi$. |
+| [mae](#pompon.losses.mae) | Mean absolute error |
+| [mse](#pompon.losses.mse) | Mean squared error |
+| [rmse](#pompon.losses.rmse) | Root mean squared error |
+| [total_loss](#pompon.losses.total_loss) | Total loss function. |
+
+### L1_entropy { #pompon.losses.L1_entropy }
+
+`losses.L1_entropy(L1_norm)`
+
+Entropy of the basis $\phi$.
+
+$$
+    - \sum_{i=1}^{N} \phi_i \log \left( \phi_i \right)
+$$
+
+#### Parameters
+
+| Name      | Type                 | Description                            | Default    |
+|-----------|----------------------|----------------------------------------|------------|
+| `L1_norm` | [Array](`jax.Array`) | L1 norm of the basis with shape ($N$,) | _required_ |
+
+#### Returns
+
+| Type                 | Description                            |
+|----------------------|----------------------------------------|
+| [Array](`jax.Array`) | entropy of the basis with shape ($N$,) |
+
+### L1_norm { #pompon.losses.L1_norm }
+
+`losses.L1_norm(phi)`
+
+L1 norm of the basis $\phi$.
+
+#### Parameters
+
+| Name   | Type                 | Description                 | Default    |
+|--------|----------------------|-----------------------------|------------|
+| `phi`  | [Array](`jax.Array`) | basis with shape ($D$, $N$) | _required_ |
+
+#### Returns
+
+| Type                 | Description                            |
+|----------------------|----------------------------------------|
+| [Array](`jax.Array`) | L1 norm of the basis with shape ($N$,) |
+
+### mae { #pompon.losses.mae }
+
+`losses.mae(y_train, y_pred)`
+
+Mean absolute error
+
+$$
+    \mathrm{MAE} = \frac{1}{D} \sum_{i=1}^D |y_i - \hat{y}_i|
+$$
+
+#### Parameters
+
+| Name      | Type                 | Description                    | Default    |
+|-----------|----------------------|--------------------------------|------------|
+| `y_train` | [Array](`jax.Array`) | target value with shape (D, 1) | _required_ |
+| `y_pred`  | [Array](`jax.Array`) | prediction with shape (D, 1)   | _required_ |
+
+#### Returns
+
+| Type                 | Description                         |
+|----------------------|-------------------------------------|
+| [Array](`jax.Array`) | mean absolute error with shape (1,) |
+
+### mse { #pompon.losses.mse }
+
+`losses.mse(y_train, y_pred)`
+
+Mean squared error
+
+$$
+    \mathrm{MSE} = \frac{1}{D} \sum_{i=1}^D (y_i - \hat{y}_i)^2
+$$
+
+#### Parameters
+
+| Name      | Type                 | Description                    | Default    |
+|-----------|----------------------|--------------------------------|------------|
+| `y_train` | [Array](`jax.Array`) | target value with shape (D, 1) | _required_ |
+| `y_pred`  | [Array](`jax.Array`) | prediction with shape (D, 1)   | _required_ |
+
+#### Returns
+
+| Type                 | Description                        |
+|----------------------|------------------------------------|
+| [Array](`jax.Array`) | mean squared error with shape (1,) |
+
+### rmse { #pompon.losses.rmse }
+
+`losses.rmse(y_train, y_pred)`
+
+Root mean squared error
+
+$$
+    \mathrm{RMSE} = \sqrt{\frac{1}{D} \sum_{i=1}^D (y_i - \hat{y}_i)^2}
+$$
+
+#### Parameters
+
+| Name      | Type                 | Description                    | Default    |
+|-----------|----------------------|--------------------------------|------------|
+| `y_train` | [Array](`jax.Array`) | target value with shape (D, 1) | _required_ |
+| `y_pred`  | [Array](`jax.Array`) | prediction with shape (D, 1)   | _required_ |
+
+#### Returns
+
+| Type                 | Description                             |
+|----------------------|-----------------------------------------|
+| [Array](`jax.Array`) | root mean squared error with shape (1,) |
+
+### total_loss { #pompon.losses.total_loss }
+
+`losses.total_loss(y_train, y_pred, basis, lambda1=0.01, mu1=1.0, mu2=1.0)`
+
+Total loss function.
+
+$$
+    \mathrm{total\_loss} = \mathrm{MSE}
+    + \lambda (\mu_1 \mathrm{L1\_entropy} + \mu_2 \mathrm{L1\_entropy})
+$$
+
+#### Parameters
+
+| Name      | Type                                   | Description                    | Default    |
+|-----------|----------------------------------------|--------------------------------|------------|
+| `y_train` | [Array](`jax.Array`)                   | target value with shape (D, 1) | _required_ |
+| `y_pred`  | [Array](`jax.Array`)                   | prediction with shape (D, 1)   | _required_ |
+| `basis`   | [list](`list`)\[[Array](`jax.Array`)\] | basis with shape (D, N)        | _required_ |
+
+#### Returns
+
+| Type                 | Description                |
+|----------------------|----------------------------|
+| [Array](`jax.Array`) | total loss with shape (1,) |

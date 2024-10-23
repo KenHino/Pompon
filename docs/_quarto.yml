@@ -1,0 +1,185 @@
+project:
+  type: website
+
+filters:
+  - interlinks
+
+interlinks:
+  sources:
+    numpy:
+      url: https://numpy.org/doc/stable/
+      object: [numpy.ndarray]
+    python:
+      url: https://docs.python.org/3/
+    jax:
+      url: https://jax.readthedocs.io/en/latest/
+      object: [jax.numpy.ndarray, jax.Array]
+    optax:
+      url: https://optax.readthedocs.io/en/latest/
+      object: [optax.GradientTransformation]
+
+
+website:
+  title: "Pompon"
+  repo-url: "https://github.com/KenHino/Pompon"
+  repo-actions: [edit, issue]
+  image: "notebook/assets/pompon-logo.svg"
+  navbar:
+    logo:
+        "notebook/assets/pompon-logo.svg"
+    right:
+      - icon: github
+        href: "https://github.com/KenHino/Pompon"
+      - href: index.qmd
+        text: Home
+      - install.qmd
+      - notebook/index.qmd
+      - reference/index.qmd
+  sidebar:
+    style: "docked"
+    search: true
+    collapse-level: 1
+    contents:
+      - index.qmd
+      - install.qmd
+      - section: "Tutorial"
+        href: notebook/index.qmd
+        contents:
+          - section: "Model potential"
+            contents:
+              - notebook/2dpes.ipynb
+              - notebook/nd_pes.ipynb
+          - section: "ab initio potential"
+            contents:
+              - notebook/h2co_opt.ipynb
+              - notebook/h2co_2dcut.ipynb
+          - section: "Exporting MPO"
+            contents:
+              - notebook/create-random-mpo.ipynb
+              - notebook/nnmpo_to_itensor_mpo.ipynb
+              - notebook/itensor_vDMRG.ipynb
+      - section: "API Docs"
+        contents:
+          - section: "Model"
+            contents:
+              - name: NNMPO
+                href: reference/model.NNMPO.qmd
+              - name: OneBody
+                href: reference/sop.OneBody.qmd
+          - section: "Layers"
+            contents:
+              - section: Parameter
+                href: reference/layers.parameters.qmd
+                contents:
+                  - reference/layers.parameters.Parameter.qmd
+              - section: Tensor
+                href: reference/layers.tensor.qmd
+                contents:
+                  - name: Tensor
+                    href: reference/layers.tensor.Tensor.qmd
+                  - name: Core
+                    href: reference/layers.tensor.Core.qmd
+                  - name: TwodotCore
+                    href: reference/layers.tensor.TwodotCore.qmd
+                  - name: LeftBlockBatch
+                    href: reference/layers.tensor.LeftBlockBatch.qmd
+                  - name: RightBlockBatch
+                    href: reference/layers.tensor.RightBlockBatch.qmd
+                  - name: BasisBatch
+                    href: reference/layers.tensor.BasisBatch.qmd
+              - section: "TT"
+                contents:
+                  - name: TensorTrain
+                    href: reference/layers.tt.TensorTrain.qmd
+              - section: "Coordinators"
+                contents:
+                  - name: Stiefel
+                    href: reference/layers.coordinator.Stiefel.qmd
+                  - name: Coordinator
+                    href: reference/layers.coordinator.Coordinator.qmd
+              - section: "Basis"
+                contents:
+                  - name: Basis
+                    href: reference/layers.basis.Basis.qmd
+              - section: "Linear"
+                contents:
+                  - name: Linear
+                    href: reference/layers.linear.Linear.qmd
+
+
+          - section: "Activations"
+            contents:
+              - reference/layers.activations.qmd
+          - section: "Optimizer"
+            href: reference/optimizer.qmd
+            contents:
+              - reference/optimizer.sweeper.Sweeper.qmd
+              - reference/optimizer.lin_reg.LinearRegression.qmd
+              - reference/optimizer.adam.Adam.qmd
+              - reference/optimizer.momentum.Momentum.qmd
+              - reference/optimizer.sgd.SGD.qmd
+          - section: "MISC"
+            contents:
+              - reference/utils.qmd
+              - reference/dataloader.DataLoader.qmd
+  page-footer: "Copyright 2024, Kentaro Hino"
+  page-navigation: true
+
+
+format:
+  html:
+    theme: united
+    css: styles.css
+    toc: true
+    code-overflow: scroll
+    code-fold: show
+    code-tools: true
+    code-block-bg: true
+    code-block-border-left: "#31BAE9"
+    code-line-numbers: true
+    code-link: true
+
+
+quartodoc:
+  package: pompon
+  parser: google
+  render_interlinks: true
+  title: "API Docs"
+  sections:
+    - title: "Pompon"
+      desc: "Python package for potential optimizer in matrix product operator"
+      options:
+        include_inherited: true
+      contents:
+        - model.Model
+        - model.NNMPO
+        - sop.SumOfProducts
+        - sop.OneBody
+        - layers.parameters
+        - layers.parameters.Parameter
+        - layers.tensor
+        - layers.tensor.Tensor
+        - layers.tensor.Core
+        - layers.tensor.TwodotCore
+        - layers.tensor.LeftBlockBatch
+        - layers.tensor.RightBlockBatch
+        - layers.tensor.BasisBatch
+        - layers.tt.TensorTrain
+        - layers.coordinator.Stiefel
+        - layers.coordinator.Coordinator
+        - layers.basis.Basis
+        - layers.basis.Phi
+        - layers.linear.Linear
+        - layers
+        - layers.activations
+        - optimizer
+        - optimizer.sweeper.sweep
+        - optimizer.sweeper.Sweeper
+        - optimizer.lin_reg.LinearRegression
+        - optimizer.Optimizer
+        - optimizer.adam.Adam
+        - optimizer.momentum.Momentum
+        - optimizer.sgd.SGD
+        - dataloader.DataLoader
+        - utils
+        - losses

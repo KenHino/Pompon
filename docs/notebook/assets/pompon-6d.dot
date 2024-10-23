@@ -1,0 +1,197 @@
+digraph Pompon {
+    newrank=true; // rank without respect to cluster
+    rankdir="TD";
+  //rankdir=TD; // 垂直向き
+  compound=true;
+  splines=false;
+
+  node [shape=circle style=filled]; // ノードのスタイル
+
+  x0 -> q0 -> phi_0_0 -> phi_0_1 -> dot_0_1_18 -> phi_0_19 -> phi_0 -> W0 [ style=invis ];
+  x1 -> q1 -> phi_1_0 -> phi_1_1 -> dot_1_1_18 -> phi_1_19 -> phi_1 -> W1 [ style=invis ];
+  x2 -> q2 -> phi_2_0 -> phi_2_1 -> dot_2_1_18 -> phi_2_19 -> phi_2 -> W2 [ style=invis ];
+  x3 -> q3 -> phi_3_0 -> phi_3_1 -> dot_3_1_18 -> phi_3_19 -> phi_3 -> W3 [ style=invis ];
+  x4 -> q4 -> phi_4_0 -> phi_4_1 -> dot_4_1_18 -> phi_4_19 -> phi_4 -> W4 [ style=invis ];
+  x5 -> q5 -> phi_5_0 -> phi_5_1 -> dot_5_1_18 -> phi_5_19 -> phi_5 -> W5 [ style=invis ];
+
+  x0 [label="x0"];
+  x1 [label="x1"];
+  x2 [label="x2"];
+  x3 [label="x3"];
+  x4 [label="x4"];
+  x5 [label="x5"];
+  {rank=same; x0; x1; x2; x3; x4; x5};
+  x0 -> x1 -> x2 -> x3 -> x4 -> x5 [ style=invis ];
+
+ // subgraph cluster_coord {
+    q0 [label="q0"];
+    q1 [label="q1"];
+    q2 [label="q2"];
+    q3 [label="q3"];
+    q4 [label="q4"];
+    q5 [label="q5"];
+    1 [label="1"];
+    //style=invis;
+    {rank=same; q0; q1; q2; q3; q4; q5; 1};
+    q0 -> q1 -> q2 -> q3 -> q4 -> q5 -> 1[ style=invis ];
+  //};
+  x0 -> q0;
+  x0 -> q1;
+  x0 -> q2;
+  x0 -> q3;
+  x0 -> q4;
+  x0 -> q5;
+  x1 -> q0;
+  x1 -> q1;
+  x1 -> q2;
+  x1 -> q3;
+  x1 -> q4;
+  x1 -> q5;
+  x2 -> q0;
+  x2 -> q1;
+  x2 -> q2;
+  x2 -> q3;
+  x2 -> q4;
+  x2 -> q5;
+  x3 -> q0;
+  x3 -> q1;
+  x3 -> q2;
+  x3 -> q3;
+  x3 -> q4;
+  x3 -> q5;
+  x4 -> q0;
+  x4 -> q1;
+  x4 -> q2;
+  x4 -> q3;
+  x4 -> q4;
+  x4 -> q5;
+  x5 -> q0;
+  x5 -> q1;
+  x5 -> q2;
+  x5 -> q3;
+  x5 -> q4;
+  x5 -> q5;
+
+
+  subgraph cluster_0 {
+    phi_0_0 [label="1"];
+    phi_0_1 [label="φ"];
+    dot_0_1_18 [label="..."];
+    phi_0_19 [label="φ"];
+  }
+
+  subgraph cluster_1 {
+    phi_1_0 [label="1"];
+    phi_1_1 [label="φ"];
+    dot_1_1_18 [label="..."];
+    phi_1_19 [label="φ"];
+  }
+  subgraph cluster_2 {
+    phi_2_0 [label="1"];
+    phi_2_1 [label="φ"];
+    dot_2_1_18 [label="..."];
+    phi_2_19 [label="φ"];
+  }
+  subgraph cluster_3 {
+    phi_3_0 [label="1"];
+    phi_3_1 [label="φ"];
+    dot_3_1_18 [label="..."];
+    phi_3_19 [label="φ"];
+  }
+  subgraph cluster_4 {
+    phi_4_0 [label="1"];
+    phi_4_1 [label="φ"];
+    dot_4_1_18 [label="..."];
+    phi_4_19 [label="φ"];
+  }
+  subgraph cluster_5 {
+    phi_5_0 [label="1"];
+    phi_5_1 [label="φ"];
+    dot_5_1_18 [label="..."];
+    phi_5_19 [label="φ"];
+  }
+
+  q0 -> phi_0_1;
+  1 -> phi_0_1;
+  q0 -> dot_0_1_18;
+  1 -> dot_0_1_18;
+  q0 -> phi_0_19;
+  1 -> phi_0_19;
+
+  q1 -> phi_1_1;
+  1 -> phi_1_1;
+  q1 -> dot_1_1_18;
+  1 -> dot_1_1_18;
+  q1 -> phi_1_19;
+  1 -> phi_1_19;
+
+  q2 -> phi_2_1;
+  1 -> phi_2_1;
+  q2 -> dot_2_1_18;
+  1 -> dot_2_1_18;
+  q2 -> phi_2_19;
+  1 -> phi_2_19;
+
+  q3 -> phi_3_1;
+  1 -> phi_3_1;
+  q3 -> dot_3_1_18;
+  1 -> dot_3_1_18;
+  q3 -> phi_3_19;
+  1 -> phi_3_19;
+
+  q4 -> phi_4_1;
+  1 -> phi_4_1;
+  q4 -> dot_4_1_18;
+  1 -> dot_4_1_18;
+  q4 -> phi_4_19;
+  1 -> phi_4_19;
+
+  q5 -> phi_5_1;
+  1 -> phi_5_1;
+  q5 -> dot_5_1_18;
+  1 -> dot_5_1_18;
+  q5 -> phi_5_19;
+  1 -> phi_5_19;
+
+
+  subgraph cluster_tt {
+    phi_0 [label="ϕ", color=red];
+    phi_1 [label="ϕ", color=red];
+    phi_2 [label="ϕ", color=red];
+    phi_3 [label="ϕ", color=red];
+    phi_4 [label="ϕ", color=red];
+    phi_5 [label="ϕ", color=red];
+    W0 [label="W", color=red];
+    W1 [label="W", color=red];
+    W2 [label="W", color=red];
+    W3 [label="W", color=red];
+    W4 [label="W", color=red];
+    W5 [label="W", color=red];
+    phi_0 -> phi_1 -> phi_2 -> phi_3 -> phi_4 -> phi_5 [ style=invis ];
+    W0 -> W1 -> W2 -> W3 -> W4 -> W5 [ style=invis ];
+    {rank=same; phi_0 phi_1 phi_2 phi_3 phi_4 phi_5}
+    {rank=same; W0 W1 W2 W3 W4 W5}
+  }
+  phi_0_19 -> phi_0 [ltail=cluster_0, style=dashed];
+  phi_1_19 -> phi_1 [ltail=cluster_1, style=dashed];
+  phi_2_19 -> phi_2 [ltail=cluster_2, style=dashed];
+  phi_3_19 -> phi_3 [ltail=cluster_3, style=dashed];
+  phi_4_19 -> phi_4 [ltail=cluster_4, style=dashed];
+  phi_5_19 -> phi_5 [ltail=cluster_5, style=dashed];
+
+
+  phi_0 -> W0 [label="N=20", arrowhead=none, penwidth=3];
+  phi_1 -> W1 [label="N=20", arrowhead=none, penwidth=3];
+  phi_2 -> W2 [label="N=20", arrowhead=none, penwidth=3];
+  phi_3 -> W3 [label="N=20", arrowhead=none, penwidth=3];
+  phi_4 -> W4 [label="N=20", arrowhead=none, penwidth=3];
+  phi_5 -> W5 [label="N=20", arrowhead=none, penwidth=3];
+
+  W0 -> W1 [label="M=1", arrowhead=none, penwidth=3];
+  W1 -> W2 [label="M=1", arrowhead=none, penwidth=3];
+  W2 -> W3 [label="M=1", arrowhead=none, penwidth=3];
+  W3 -> W4 [label="M=1", arrowhead=none, penwidth=3];
+  W4 -> W5 [label="M=1", arrowhead=none, penwidth=3];
+
+  W0 -> y [label="", ltail=cluster_tt,];
+}
