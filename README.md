@@ -99,21 +99,21 @@ Please feel free to give us feedback or pull requests.
 ### Results of manuscript
 
 - Reference geometry information
-    - [docs/notebook/bagel_h2co_dft.s0.harmonic.json](docs/notebook/data/bagel_h2co_dft.s0.harmonic.json)
+    - [docs/notebook/data/bagel_h2co_dft.s0.harmonic.json](docs/notebook/data/bagel_h2co_dft.s0.harmonic.json)
 
 - Training data
-    - [docs/notebook/x_train.npy](docs/notebook/x_train.npy)
-    - [docs/notebook/y_train.npy](docs/notebook/y_train.npy)
-    - [docs/notebook/f_train.npy](docs/notebook/f_train.npy)
-    - [docs/notebook/x_validation.npy](docs/notebook/x_validation.npy)
-    - [docs/notebook/y_validation.npy](docs/notebook/y_validation.npy)
-    - [docs/notebook/f_validation.npy](docs/notebook/f_validation.npy)
-    - [docs/notebook/x_test.npy](docs/notebook/x_test.npy)
-    - [docs/notebook/y_test.npy](docs/notebook/y_test.npy)
-    - [docs/notebook/f_test.npy](docs/notebook/f_test.npy)
+    - [docs/notebook/data/x_train.npy](docs/notebook/data/x_train.npy)
+    - [docs/notebook/data/y_train.npy](docs/notebook/data/y_train.npy)
+    - [docs/notebook/data/f_train.npy](docs/notebook/data/f_train.npy)
+    - [docs/notebook/data/x_validation.npy](docs/notebook/data/x_validation.npy)
+    - [docs/notebook/data/y_validation.npy](docs/notebook/data/y_validation.npy)
+    - [docs/notebook/data/f_validation.npy](docs/notebook/data/f_validation.npy)
+    - [docs/notebook/data/x_test.npy](docs/notebook/data/x_test.npy)
+    - [docs/notebook/data/y_test.npy](docs/notebook/data/y_test.npy)
+    - [docs/notebook/data/f_test.npy](docs/notebook/data/f_test.npy)
 
 - Optimization
-    - [docs/notebook/_h2co_opt.py](docs/notebook/h2co_opt.py)
+    - [docs/notebook/_h2co_opt.py](docs/notebook/_h2co_opt.py)
 
 - MPO encoding
     - [docs/notebook/create-random-mpo.ipynb](docs/notebook/create-random-mpo.ipynb)
