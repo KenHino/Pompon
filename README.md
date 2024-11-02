@@ -98,6 +98,18 @@ Please feel free to give us feedback or pull requests.
 
 ### Results of manuscript
 
+```
+@misc{hino2024neuralnetworkmatrixproduct,
+      title={Neural Network Matrix Product Operator: A Multi-Dimensionally Integrable Machine Learning Potential}, 
+      author={Kentaro Hino and Yuki Kurashige},
+      year={2024},
+      eprint={2410.23858},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2410.23858}, 
+}
+```
+
 - Reference geometry information
     - [docs/notebook/data/bagel_h2co_dft.s0.harmonic.json](docs/notebook/data/bagel_h2co_dft.s0.harmonic.json)
 
