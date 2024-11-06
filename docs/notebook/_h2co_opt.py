@@ -177,7 +177,7 @@ else:
     sweeper = Sweeper(optimizer)
     solver = optax.adam(1.0e-07)
     optimizer.lr = 1.0e-12
-    for i in range(210, 240):
+    for i in range(30):
         sweeper.sweep(
             nsweeps=10,
             opt_tol=1.0e-10,
@@ -199,7 +199,7 @@ nnmpo.export_h5(f"data/nnmpo_final_rmse_{rmse:.3e}.h5")
 
 # Plot as needed
 nnmpo = pompon.NNMPO.import_h5(
-    f'data/nnmpo_final_rmse_{np.sqrt(trace["mse_test"][-1]) * y_scale:.3e}.h5'
+    f'data/nnmpo_final_rmse_{rmse:.3e}.h5'
 )
 
 y_pred = nnmpo.forward(x_test * x_scale)
