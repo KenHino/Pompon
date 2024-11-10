@@ -6,12 +6,12 @@
 
 Welcome to Pompon (Potential Optimizer in Matrix Product Operator Networks)!
 
-
-Documentation is [here](https://kenhino.github.io/Pompon/)!
-
 ## What is Pompon?
 Pompon is a Python library for optimizing matrix product operator (MPO) to randomly sampled points on a potential energy surface (PES).
 MPO is suitable for high-dimensional integral and facilitates first-principles calculation in both time-dependent and time-independent manners.
+
+## [Documentation](https://kenhino.github.io/Pompon/)
+Quick start is available on [here](https://kenhino.github.io/Pompon/notebook/).
 
 ## Installation
 
