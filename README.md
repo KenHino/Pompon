@@ -4,7 +4,7 @@
 
 ![](docs/notebook/assets/pompon-logo.svg)
 
-Welcome to Pompon (Potential Optimizer in Matrix Product Operator Networks)!
+Welcome to Pompon (Potential Optimizer in Matrix Product Operator Numerics)!
 
 ## What is Pompon?
 Pompon is a Python library for optimizing matrix product operator (MPO) to randomly sampled points on a potential energy surface (PES).
@@ -95,6 +95,12 @@ $ uv run pre-commit
 Before push, you must fix problems!!
 
 Please feel free to give us feedback or pull requests.
+
+### Third-party Libraries
+
+- [Discvar](https://github.com/KenHino/Discvar): Minumum implementation of discrete variable representation (DVR) basis in Python
+- [ITensors.jl](https://github.com/ITensor/ITensors.jl) and [ITensorMPS.jl](https://github.com/ITensor/ITensorMPS.jl): DMRG and TDVP in Julia
+- [PyTDSCF](https://github.com/QCLovers/PyTDSCF): TDVP particularly for molecular systems in Python (JAX, Numpy)
 
 ### Results of manuscript
 
