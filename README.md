@@ -102,20 +102,30 @@ Please feel free to give us feedback or pull requests.
 - [ITensors.jl](https://github.com/ITensor/ITensors.jl) and [ITensorMPS.jl](https://github.com/ITensor/ITensorMPS.jl): DMRG and TDVP in Julia
 - [PyTDSCF](https://github.com/QCLovers/PyTDSCF): TDVP particularly for molecular systems in Python (JAX, Numpy)
 
-### Results of manuscript
+### Citations 
 
-```
-@misc{hino2024neuralnetworkmatrixproduct,
-      title={Neural Network Matrix Product Operator: A Multi-Dimensionally Integrable Machine Learning Potential}, 
-      author={Kentaro Hino and Yuki Kurashige},
-      year={2024},
-      eprint={2410.23858},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG},
-      url={https://arxiv.org/abs/2410.23858}, 
+[manuscript](https://link.aps.org/doi/10.1103/PhysRevResearch.7.023217)
+
+```bib
+@article{hino2025neural,
+  title={Neural network matrix product operator: A multi-dimensionally integrable machine learning potential},
+  author={Hino, Kentaro and Kurashige, Yuki},
+  journal={Physical Review Research},
+  volume={7},
+  number={2},
+  pages={023217},
+  numpages = {14},
+  year={2025},
+  publisher = {American Physical Society},
+  doi = {10.1103/PhysRevResearch.7.023217},
+  url = {https://link.aps.org/doi/10.1103/PhysRevResearch.7.023217}
 }
 ```
 
+### Data availability
+#### at [Zenodo](https://zenodo.org/records/15345341).
+
+#### at this repository (may be deleted in the future)
 - Reference geometry information
     - [docs/notebook/data/bagel_h2co_dft.s0.harmonic.json](docs/notebook/data/bagel_h2co_dft.s0.harmonic.json)
 
