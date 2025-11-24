@@ -16,7 +16,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
     - name: checkout
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
     - name: uv-install
       run: curl -LsSf https://astral.sh/uv/install.sh | sh
     - name: uv-sync-minimal
