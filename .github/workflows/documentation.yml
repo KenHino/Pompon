@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: uv-install
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
       - name: pompon-dev-install
