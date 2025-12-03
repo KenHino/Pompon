@@ -1,5 +1,7 @@
 ![Static Badge](https://img.shields.io/badge/Version-v0.1.0-brightgreen)
 [![unittest-uv](https://github.com/KenHino/Pompon/actions/workflows/unittest-uv.yml/badge.svg)](https://github.com/KenHino/Pompon/actions/workflows/unittest-uv.yml)
+[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
+
 # Pompon
 
 ![](docs/notebook/assets/pompon-logo.svg)
